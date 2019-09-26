@@ -58,7 +58,7 @@ internal class ImagePresenter(
             Glide.with(context.applicationContext)
                 .asBitmap()
                 .load(item.model.uri)
-                .apply(requestOptions)
+                .apply(requestOptions.priority(Priority.IMMEDIATE))
                 .transition(crossFade!!)
                 .listener(object : RequestListener<Bitmap?> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap?>?, isFirstResource: Boolean): Boolean {
