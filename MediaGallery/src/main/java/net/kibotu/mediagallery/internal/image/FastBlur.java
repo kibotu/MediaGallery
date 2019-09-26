@@ -1,11 +1,11 @@
-package net.kibotu.mediagallery;
+package net.kibotu.mediagallery.internal.image;
 
 import android.graphics.Bitmap;
 
 /**
  * Created by paveld on 3/6/14.
  */
-public class FastBlur {
+class FastBlur {
 
     public static Bitmap doBlur(Bitmap sentBitmap, int radius, boolean canReuseInBitmap) {
 

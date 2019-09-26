@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.kibotu.mediagallery">
+
+    <application>
+
+        <activity
+            android:name=".MediaGalleryActivity"
+            android:exported="false" />
+
+    </application>
+
+</manifest>
