@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
                 isZoomable = true
                 showVideoControls = true
                 media = uris.map { MediaData(uri = it) }
+                preload = media.size
             }.startActivity()
         }
 
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
                 isZoomable = true
                 showVideoControls = true
                 media = uris.map { MediaData(uri = it) }
+                preload = media.size.coerceAtMost(10)
             }.startActivity()
         }
 
@@ -63,8 +65,6 @@ class MainActivity : AppCompatActivity() {
                 media = uris.map { MediaData(uri = it) }
             }.startActivity()
         }
-
-        image_gallery.performClick()
     }
 }
 

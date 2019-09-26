@@ -88,7 +88,7 @@ internal class ImagePresenter(
             .dontAnimate()
             .override(1024)
             .downsample(DownsampleStrategy.CENTER_INSIDE)
-            .skipMemoryCache(true)
+            .skipMemoryCache(false)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
     }
 

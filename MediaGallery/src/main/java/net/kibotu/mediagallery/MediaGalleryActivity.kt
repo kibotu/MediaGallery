@@ -43,17 +43,18 @@ class MediaGalleryActivity : AppCompatActivity() {
 
         val items = (params?.media ?: emptyList()).map { PresenterModel(it, R.layout.media_gallery_item_presenter) }
 
-        if (params?.preload == true)
-            preload(items, imagePresenter.requestOptions)
+        preload(params?.preload, items, imagePresenter.requestOptions)
 
         adapter.submitList(items)
     }
 
-    private fun preload(items: List<PresenterModel<MediaData>>, requestOptions: RequestOptions) {
+    private fun preload(amount: Int?, items: List<PresenterModel<MediaData>>, requestOptions: RequestOptions) {
+        if (amount == null)
+            return
 
         val counter = AtomicInteger(0)
 
-        items.forEach {
+        items.take(amount).forEach {
 
             Glide.with(applicationContext!!)
                 .applyDefaultRequestOptions(requestOptions.priority(Priority.NORMAL))
@@ -92,7 +93,7 @@ class MediaGalleryActivity : AppCompatActivity() {
             var isTranslatable: Boolean = true,
             var showVideoControls: Boolean = false,
             var isBlurrable: Boolean = true,
-            var preload: Boolean = true
+            var preload: Int? = null
         ) : Parcelable
 
         fun startActivity() = context.get()!!.startActivity(with(Intent(context.get(), MediaGalleryActivity::class.java)) { putExtra(Options::class.java.canonicalName, options) })
