@@ -1,9 +1,11 @@
 package net.kibotu.mediagallery.internal.image
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
 
 internal class ZoomageView @JvmOverloads constructor(
     context: Context,
@@ -24,5 +26,10 @@ internal class ZoomageView @JvmOverloads constructor(
             isTranslatable = true
             super.onTouchEvent(event)
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        scaleType = ScaleType.FIT_CENTER
     }
 }

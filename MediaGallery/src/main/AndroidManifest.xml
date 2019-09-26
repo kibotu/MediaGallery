@@ -1,11 +1,18 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.kibotu.mediagallery">
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application>
 
         <activity
             android:name=".MediaGalleryActivity"
-            android:exported="false" />
+            android:configChanges="screenSize|orientation"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar.FullScreen" />
 
     </application>
 

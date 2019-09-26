@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
         // [] list of media objects
         // [] images
-        val uris = (0 until 10).map { Uri.parse(createRandomImageUrl()) }
         // [] streaming urls
         // [] click listener
         // [] zoomable
@@ -29,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         // [] blurry
 
         image_gallery.onClick {
+            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this) {
                 autoPlay = true
                 isBlurrable = true
@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         video_gallery.onClick {
+            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this) {
                 autoPlay = true
                 isBlurrable = true
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         mixed_gallery.onClick {
+            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this) {
                 autoPlay = true
                 isBlurrable = true
@@ -60,5 +62,7 @@ class MainActivity : AppCompatActivity() {
                 media = uris.map { MediaData(uri = it) }
             }.startActivity()
         }
+
+        image_gallery.performClick()
     }
 }

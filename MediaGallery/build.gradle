@@ -116,6 +116,7 @@ dependencies {
 
     implementation libs.recyclerViewPresenter4
     implementation libs.zoomage
+    implementation libs.numberprogressbar
 
     implementation libs.kotlinJdk8
     implementation libs.supportMultidex
@@ -124,12 +125,12 @@ dependencies {
     implementation libs.constraintLayout2
     implementation libs.androidKtxCore
 
-    implementation "androidx.viewpager2:viewpager2:1.0.0-beta04"
+    implementation libs.viewpager2
 
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:4.10.0'
-    kapt 'com.github.bumptech.glide:compiler:4.10.0'
-
+    implementation libs.glide
+    implementation libs.glideOkHttp3
+    implementation libs.lifecycleCommonJava8
+    kapt libs.glideAnnotationsProcessor
 }
 
 def escape(Object value) {

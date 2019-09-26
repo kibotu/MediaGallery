@@ -1,7 +1,6 @@
 package net.kibotu.mediagallery.internal.image
 
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -22,15 +21,8 @@ internal class BlurryImageView @JvmOverloads constructor(
 
     private var blurryBitmap: Bitmap? = null
 
-    fun blur(bitmap: Bitmap?) {
-        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (bitmap?.width ?: 0 >= bitmap?.height ?: 0)
-                blurWith(bitmap)
-        }
-
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-            if (bitmap?.height ?: 0 >= bitmap?.width ?: 0)
-                blurWith(bitmap)
+    override fun setImageBitmap(bitmap: Bitmap?) {
+        blurWith(bitmap)
     }
 
     /**
@@ -70,11 +62,11 @@ internal class BlurryImageView @JvmOverloads constructor(
             )
 
         val canvas = Canvas(blurryBitmap!!)
-//        canvas.translate(-left.toFloat() + -measuredWidth / 2f, -top.toFloat() / 2f)
+//         canvas.translate(-left.toFloat() + -measuredWidth / 2f, -top.toFloat() / 2f)
 //        canvas.scale(1 / scaleFactor, 1 / scaleFactor)
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
-        blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, true)
+        blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, false)
 
         setImageBitmap(blurryBitmap)
 
