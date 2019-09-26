@@ -80,7 +80,7 @@ internal class ImagePresenter(
         }
     }
 
-    private val requestOptions by lazy {
+     val requestOptions by lazy {
 
         RequestOptions
             .fitCenterTransform()

@@ -132,10 +132,10 @@ dependencies {
     implementation libs.lifecycleCommonJava8
     kapt libs.glideAnnotationsProcessor
 
-    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.0'
+    implementation libs.okhttp4
+    implementation libs.okhttp3LoggingInterceptor
 
-    implementation 'me.jessyan:progressmanager:1.5.0'
+    implementation libs.progressManager
 }
 
 def escape(Object value) {
@@ -144,6 +144,9 @@ def escape(Object value) {
 
 configurations.all {
     resolutionStrategy.cacheDynamicVersionsFor 10, 'minutes'
+
+    resolutionStrategy.force libs.okhttp4
+    resolutionStrategy.force libs.okhttp3LoggingInterceptor
 }
 
 apply from: "${project.rootDir}/Android-Dependencies/javadoc.gradle"
