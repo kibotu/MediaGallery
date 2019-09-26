@@ -1,19 +1,41 @@
+ext {
+    versionName = VERSION_NAME
+    VERSION_CODE = 1
+    VSC = VSC_PATH
+    isCi = true
+}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.getkeepsafe.dexcount'
 
+
+android {
+
+    compileSdkVersion compileSdkVer
+    buildToolsVersion buildToolsVer
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion minSdkVer
+        targetSdkVersion targetSdkVer
+        versionCode isCi ? commitCount() : VERSION_CODE
+        versionName isCi ? simpleReleaseVersionName() : VERSION_NAME
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'consumer-rules.pro'
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        buildConfigField "String", "SIMPLE_VERSION_NAME", escape(simpleReleaseVersionName())
+        buildConfigField "String", "CANONICAL_VERSION_NAME", escape(canonicalReleaseVersionName())
+        buildConfigField "String", "COMMIT_HASH", escape(commitHash())
+        buildConfigField "String", "BRANCH", escape(branchNameByGit())
+        buildConfigField "String", "BUILD_DATE", escape(new Date().getTime())
+
+        // to avoid lib compile for release when app is compiled for debug: //http://stackoverflow.com/a/30134955/2736039
+        defaultPublishConfig 'release'
+        publishNonDefault true
     }
 
     buildTypes {
@@ -23,14 +45,79 @@ android {
         }
     }
 
+    // region compile options
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // endregion
+
+    // region compile options
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    // endregion
+
+    // region lint options
+
+    lintOptions {
+        disable 'InvalidPackage'
+        abortOnError false        // true by default
+        checkAllWarnings false
+        checkReleaseBuilds false
+        ignoreWarnings true       // false by default
+        quiet true                // false by default
+        tasks.lint.enabled = false
+    }
+
+    // endregion
+
+    // region dex options
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+        maxProcessCount 8
+    }
+
+    // endregion
+
+    // region adb options
+
+    adbOptions {
+        timeOutInMs 10 * 60 * 1000 // 10 minutes
+    }
+
+    // endregion
+
+    // region exclude duplicated meta inf files
+
+    packagingOptions {
+        exclude 'META-INF/app_debug.kotlin_module'
+        exclude 'META-INF/library-core_release.kotlin_module'
+    }
+
+    // endregion
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation libs.kotlinJdk8
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+def escape(Object value) {
+    return "\"" + value + "\""
+}
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 10, 'minutes'
+}
+
+apply from: "${project.rootDir}/Android-Dependencies/javadoc.gradle"
+apply from: "${project.rootDir}/Android-Dependencies/bintray.gradle"
