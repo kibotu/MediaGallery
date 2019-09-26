@@ -31,18 +31,18 @@ internal class GlideImageLoader(private val backgroundImageView: ImageView, priv
 
         log { "load url=$url" }
 
-        ProgressAppGlideModule.expect(url, object : ProgressAppGlideModule.UIonProgressListener {
-
-            override val granualityPercentage: Float = 0.1f
-
-            override fun onProgress(bytesRead: Long, expectedLength: Long) {
-
-                val progress = (100f * bytesRead / expectedLength).toInt()
-                log { "onProgress bytesRead=$bytesRead expectedLength=$expectedLength => progress=$progress" }
-
-                progressBar?.progress = progress
-            }
-        })
+//        ProgressAppGlideModule.expect(url, object : ProgressAppGlideModule.UIonProgressListener {
+//
+//            override val granualityPercentage: Float = 0.1f
+//
+//            override fun onProgress(bytesRead: Long, expectedLength: Long) {
+//
+//                val progress = (100f * bytesRead / expectedLength).toInt()
+//                log { "onProgress bytesRead=$bytesRead expectedLength=$expectedLength => progress=$progress" }
+//
+//                progressBar?.progress = progress
+//            }
+//        })
 
         Glide.with(imageView.context.applicationContext)
             .asBitmap()
@@ -51,13 +51,13 @@ internal class GlideImageLoader(private val backgroundImageView: ImageView, priv
             .apply(options.skipMemoryCache(true))
             .listener(object : RequestListener<Bitmap?> {
                 override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap?>?, isFirstResource: Boolean): Boolean {
-                    ProgressAppGlideModule.forget(url)
+//                    ProgressAppGlideModule.forget(url)
                     onFinished()
                     return false
                 }
 
                 override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap?>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    ProgressAppGlideModule.forget(url)
+//                    ProgressAppGlideModule.forget(url)
                     onFinished()
                     return false
                 }

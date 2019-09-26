@@ -21,7 +21,7 @@ internal class BlurryImageView @JvmOverloads constructor(
 
     private var blurryBitmap: Bitmap? = null
 
-    override fun setImageBitmap(bitmap: Bitmap?) {
+     fun blur(bitmap: Bitmap?) {
         blurWith(bitmap)
     }
 
@@ -66,7 +66,7 @@ internal class BlurryImageView @JvmOverloads constructor(
 //        canvas.scale(1 / scaleFactor, 1 / scaleFactor)
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
-        blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, false)
+        blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, true)
 
         setImageBitmap(blurryBitmap)
 
