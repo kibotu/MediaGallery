@@ -28,8 +28,20 @@ class MainActivity : AppCompatActivity() {
         // [] player controls
         // [] blurry
 
+        val list = listOf(
+            "https://api1.europapark.de/detail-5.7/haupteingang.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_1.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_2.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_3.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_4.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_5.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_6.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_7.jpg",
+            "https://api1.europapark.de/detail-5.7/silverstar_8.jpg"
+        ).map { Uri.parse(it) }
+
         image_gallery.onClick {
-            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
+            var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this) {
                 autoPlay = true
                 isBlurrable = true
@@ -42,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         video_gallery.onClick {
-            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
+            var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this) {
                 autoPlay = true
                 isBlurrable = true
@@ -55,7 +67,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         mixed_gallery.onClick {
-            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
+            var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
+            uris = list
             MediaGalleryActivity.Builder.with(this) {
                 autoPlay = true
                 isBlurrable = true
@@ -68,6 +81,9 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+val categories by lazy {
+    listOf("abstract", "animals", "business", "cats", "city", "food", "nightlife", "fashion", "people", "nature", "sports", "technics", "transport")
+}
 
 fun createRandomImageUrl(): String {
 
@@ -80,9 +96,5 @@ fun createRandomImageUrl(): String {
     val width = MathExtensions.random(maxWidth, maxHeight)
     val height = MathExtensions.random(maxWidth, maxHeight)
 
-    return (if (endpoint)
-        "https://lorempixel.com/%d/%d/"
-    else
-        "https://picsum.photos/%d/%d/")
-        .format(if (landscape) width else height, if (landscape) height else width)
+    return "https://lorempixel.com/${categories.random()}/%d/%d".format(if (landscape) width else height, if (landscape) height else width)
 }

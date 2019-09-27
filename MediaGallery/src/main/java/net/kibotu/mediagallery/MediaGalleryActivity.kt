@@ -40,6 +40,7 @@ class MediaGalleryActivity : AppCompatActivity() {
         )
         adapter.registerPresenter(imagePresenter)
         pager.adapter = adapter
+        pager.setPageTransformer(DepthPageTransformer())
 
         val items = (params?.media ?: emptyList()).map { PresenterModel(it, R.layout.media_gallery_item_presenter) }
 

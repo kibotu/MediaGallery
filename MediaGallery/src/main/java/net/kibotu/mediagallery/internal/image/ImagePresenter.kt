@@ -17,15 +17,16 @@ import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import com.daimajia.numberprogressbar.NumberProgressBar
 import kotlinx.android.synthetic.main.media_gallery_item_presenter.view.*
-import me.jessyan.progressmanager.ProgressListener
-import me.jessyan.progressmanager.ProgressManager
-import me.jessyan.progressmanager.body.ProgressInfo
 import net.kibotu.android.recyclerviewpresenter.Adapter
 import net.kibotu.android.recyclerviewpresenter.Presenter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
 import net.kibotu.mediagallery.MediaData
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.internal.log
+import net.kibotu.mediagallery.internal.progress.ProgressInfo
+import net.kibotu.mediagallery.internal.progress.ProgressListener
+import net.kibotu.mediagallery.internal.progress.ProgressManager
+
 
 internal class ImagePresenter(
     val isBlurrable: Boolean = true,
@@ -54,6 +55,9 @@ internal class ImagePresenter(
 
             image.setImageBitmap(null)
             imageBackground.setImageBitmap(null)
+//
+//            GlideImageLoader(imageBackground, image, number_progress_bar)
+//                .load(item.model.uri.toString(), requestOptions)
 
             Glide.with(context.applicationContext)
                 .asBitmap()
@@ -80,7 +84,7 @@ internal class ImagePresenter(
         }
     }
 
-     val requestOptions by lazy {
+    val requestOptions by lazy {
 
         RequestOptions
             .fitCenterTransform()

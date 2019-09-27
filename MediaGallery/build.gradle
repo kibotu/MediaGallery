@@ -114,14 +114,16 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation libs.viewpagerTransformers
+
     implementation libs.recyclerViewPresenter4
     implementation libs.zoomage
     implementation libs.numberprogressbar
 
     implementation libs.kotlinJdk8
     implementation libs.supportMultidex
-    implementation libs.supportAppCompat
-    implementation libs.appCompatResources
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat-resources:1.1.0'
     implementation libs.constraintLayout2
     implementation libs.androidKtxCore
 
@@ -135,7 +137,7 @@ dependencies {
     implementation libs.okhttp4
     implementation libs.okhttp3LoggingInterceptor
 
-    implementation libs.progressManager
+    // implementation libs.progressManager
 }
 
 def escape(Object value) {

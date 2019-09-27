@@ -130,11 +130,11 @@ dependencies {
 
     implementation libs.kotlinJdk8
     implementation libs.supportMultidex
-    implementation libs.supportAppCompat
-    implementation libs.appCompatResources
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.appcompat:appcompat-resources:1.1.0'
     implementation libs.supportDesign
     implementation libs.constraintLayout2
-    implementation libs.supportVectorDrawable
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation libs.androidKtxCore
     implementation libs.exozetCore
     implementation libs.logger
