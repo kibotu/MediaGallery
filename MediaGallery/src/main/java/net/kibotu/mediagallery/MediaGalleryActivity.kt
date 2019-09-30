@@ -2,6 +2,7 @@ package net.kibotu.mediagallery
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.KITKAT
@@ -33,6 +34,8 @@ class MediaGalleryActivity : AppCompatActivity() {
 
     private var requests: List<Target<Drawable>>? = null
 
+    private var isBlurrable: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,11 +45,13 @@ class MediaGalleryActivity : AppCompatActivity() {
 
         log { "params=$params" }
 
+        isBlurrable = params?.isBlurrable ?: true
+
         val adapter = PresenterAdapter()
         val imagePresenter = ImagePresenter(
-            isBlurrable = params?.isBlurrable == true,
             isZoomable = params?.isZoomable == true,
-            isTranslatable = params?.isTranslatable == true
+            isTranslatable = params?.isTranslatable == true,
+            onResourceReady = this::onUpdateBackground
         )
         adapter.registerPresenter(imagePresenter)
 
@@ -59,6 +64,11 @@ class MediaGalleryActivity : AppCompatActivity() {
         adapter.submitList(items)
 
         quit.onClick { finish() }
+    }
+
+    private fun onUpdateBackground(bitmap: Bitmap?) {
+        if (!isBlurrable) return
+        blurryBackground.blur(bitmap ?: return)
     }
 
     private fun preload(amount: Int?, items: List<PresenterModel<MediaData>>, requestOptions: RequestOptions) {

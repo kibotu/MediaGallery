@@ -21,7 +21,7 @@ internal class BlurryImageView @JvmOverloads constructor(
 
     private var blurryBitmap: Bitmap? = null
 
-     fun blur(bitmap: Bitmap?) {
+    fun blur(bitmap: Bitmap?) {
         blurWith(bitmap)
     }
 

@@ -6,11 +6,10 @@ import kotlin.math.abs
 import kotlin.math.max
 
 
-class ZoomOutSlideTransformer(private val minScale: Float = 0.85f, private val minAlpha: Float = 0.75f) : BaseTransformer() {
+class ZoomOutSlideTransformer(private val minScale: Float = 0.85f, private val minAlpha: Float = 0.75f, val enableAlpha: Boolean = false) : BaseTransformer() {
 
     override fun onTransform(view: View, position: Float) {
 
-        val background = view.findViewById<View>(R.id.imageBackground)
         val image = view.findViewById<View>(R.id.image)
 
         if (position < -1.0f && position > 1.0f) return
@@ -28,6 +27,7 @@ class ZoomOutSlideTransformer(private val minScale: Float = 0.85f, private val m
         view.translationX = translateX
         image.scaleX = scaleFactor
         image.scaleY = scaleFactor
-        background.alpha = minAlpha + (scaleFactor - minScale) / 0.14999998F * minAlpha
+        if (enableAlpha)
+            view.alpha = minAlpha + (scaleFactor - minScale) / 0.14999998F * minAlpha
     }
 }

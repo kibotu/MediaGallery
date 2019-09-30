@@ -29,9 +29,9 @@ import net.kibotu.mediagallery.internal.progress.ProgressManager
 
 
 internal class ImagePresenter(
-    val isBlurrable: Boolean = true,
     val isTranslatable: Boolean = true,
-    val isZoomable: Boolean = true
+    val isZoomable: Boolean = true,
+    var onResourceReady: ((Bitmap?) -> Unit)? = null
 ) : Presenter<MediaData>() {
 
     override val layout = R.layout.media_gallery_item_presenter
@@ -45,7 +45,7 @@ internal class ImagePresenter(
             image.isZoomable = isZoomable
             image.isTranslatable = isTranslatable
 
-//            image.view = swipe_detector
+            image.view = swipe_detector
 
             val uri = item.model.uri.toString()
 
@@ -54,7 +54,6 @@ internal class ImagePresenter(
             number_progress_bar.isVisible = true
 
             image.setImageBitmap(null)
-            imageBackground.setImageBitmap(null)
 //
 //            GlideImageLoader(imageBackground, image, number_progress_bar)
 //                .load(item.model.uri.toString(), requestOptions)
@@ -72,9 +71,7 @@ internal class ImagePresenter(
 
                     override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap?>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                         number_progress_bar.isGone = true
-                        if (isBlurrable) {
-                            imageBackground.blur(resource)
-                        }
+                        onResourceReady?.invoke(resource)
                         return false
                     }
                 })
