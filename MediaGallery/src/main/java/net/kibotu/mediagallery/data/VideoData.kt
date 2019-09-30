@@ -9,11 +9,12 @@ import java.util.*
 @Parcelize
 data class Video(
     val id: String = UUID.randomUUID().toString(),
-    val uri: Uri,
-    val type: Type = Type.FILE
+    var uri: Uri,
+    val type: Type = Type.FILE,
+    val enable360: Boolean = false
 ) : MediaData {
 
-    constructor(id: String = UUID.randomUUID().toString(), uri: String, type: Type) : this(id, Uri.parse(uri), type)
+    constructor(id: String = UUID.randomUUID().toString(), uri: String, type: Type, enable360: Boolean = false) : this(id, Uri.parse(uri), type, enable360)
 
     @IgnoredOnParcel
     @Transient
@@ -39,6 +40,10 @@ data class Video(
         /**
          * hsl stream uri
          */
-        HLS
+        HLS,
+        /**
+         * retrieves video url by youtube video id, video requires to be publicly available
+         */
+        YOUTUBE
     }
 }

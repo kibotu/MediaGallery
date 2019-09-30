@@ -3,6 +3,8 @@ package net.kibotu.mediagallery.internal.presenter
 import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
+import androidx.core.net.toUri
+import com.commit451.youtubeextractor.YouTubeExtractor
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
@@ -13,6 +15,9 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import net.kibotu.android.recyclerviewpresenter.RecyclerViewHolder
 import net.kibotu.mediagallery.BuildConfig
 import net.kibotu.mediagallery.R
@@ -42,6 +47,10 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         if (enableLogging)
             Log.v(VideoViewHolder::class.java.simpleName, "${block()}")
     }
+
+    private var disposable: Disposable? = null
+
+    private val extractor by lazy { YouTubeExtractor.Builder().build() }
 
     init {
         logv { "init" }
@@ -88,12 +97,37 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
             Video.Type.EXTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseExternalStorageFile())
             Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
             Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri)
+            Video.Type.YOUTUBE -> {
+
+                disposable = extractor.extract(uri.toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+
+                        logv { "$it" }
+
+                        val uri = it.videoStreams.firstOrNull { it.format == "MPEG4" }?.url?.toUri() ?: return@subscribe
+
+                        logv { "play $uri" }
+
+//                        val source = HlsMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+                        player?.prepare(source)
+
+                    }, {
+
+                        logv { "$it" }
+                    })
+
+                null
+
+            }
             /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
         }
 
         player!!.repeatMode = Player.REPEAT_MODE_ALL
         player!!.seekParameters = SeekParameters.CLOSEST_SYNC
-        player!!.prepare(mediaSource)
+        player!!.prepare(mediaSource ?: return)
 
     }
 
@@ -136,5 +170,10 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         player?.release()
         player = null
         progress = null
+
+        if (disposable?.isDisposed == false) {
+            disposable?.dispose()
+        }
+        disposable = null
     }
 }

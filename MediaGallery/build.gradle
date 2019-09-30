@@ -138,6 +138,7 @@ dependencies {
     implementation libs.okhttp3LoggingInterceptor
 
     implementation libs.youtubeExtractor
+    implementation libs.rx2Android
     implementation libs.exoplayer
     implementation libs.md360Player
     implementation "com.airbnb.android:lottie:3.0.7"
