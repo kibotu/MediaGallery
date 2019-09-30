@@ -1,6 +1,8 @@
 package net.kibotu.mediagallery.internal.presenter
 
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.media_gallery_video_presenter.view.*
 import net.kibotu.android.recyclerviewpresenter.Adapter
@@ -9,11 +11,13 @@ import net.kibotu.android.recyclerviewpresenter.PresenterModel
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.AssetVideo
 import net.kibotu.mediagallery.internal.log
+import net.kibotu.mediagallery.internal.onClick
 
 class VideoPresenter(
     private val showVideoControls: Boolean,
     private val showVideoControlsTimeOut: Int,
-    private val autoPlay: Boolean
+    private val autoPlay: Boolean,
+    private val showPlayPauseButton: Boolean = false
 ) : Presenter<AssetVideo>() {
 
     override val layout = R.layout.media_gallery_video_presenter
@@ -34,6 +38,37 @@ class VideoPresenter(
                 item.model.progress = it
             }
             vh.currentProgress = item.model.progress
+
+            player_view.onClick {
+                vh.isPlaying = !vh.isPlaying
+            }
+
+            // todo prettier play/pause button
+            playPauseButton(vh)
+        }
+    }
+
+    private fun View.playPauseButton(vh: VideoViewHolder) {
+
+        playPauseAnimation.isGone = !showPlayPauseButton
+        playPause.isGone = !showPlayPauseButton
+
+        if (!showPlayPauseButton) {
+            return
+        }
+
+        playPauseAnimation.progress = if (vh.isPlaying) 0f else 0.5f
+
+        playPause.onClick {
+
+            vh.isPlaying = !vh.isPlaying
+
+            if (vh.isPlaying) {
+                playPauseAnimation.setMinAndMaxProgress(0.5f, 1f)
+            } else {
+                playPauseAnimation.setMinAndMaxProgress(0f, 0.5f)
+            }
+            playPauseAnimation.playAnimation()
         }
     }
 

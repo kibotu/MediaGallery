@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
+                autoPlay = true
                 media = mutableListOf<MediaData>().apply {
                     addAll(uris.map { Image(uri = it) })
                     add(3, assetVideo)
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity() {
                 showVideoControls = true
                 media = listOf(assetVideo, assetVideo, assetVideo, assetVideo)
                 preload = media.size.coerceAtMost(10)
+                autoPlay = false
             }.startActivity()
         }
 

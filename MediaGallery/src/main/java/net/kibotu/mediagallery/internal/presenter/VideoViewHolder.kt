@@ -86,17 +86,26 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     var autoPlay: Boolean = true
 
+    var isPlaying: Boolean
+        set(value) {
+            player!!.playWhenReady = value
+        }
+        get() = player?.playWhenReady == true
+
     private fun start() {
         logv { "start" }
         player!!.seekTo(currentProgress.coerceAtLeast(0))
-        if (autoPlay)
+        if (autoPlay) {
+            isPlaying = true
             player!!.playWhenReady = true
+        }
     }
 
     fun stop() {
         logv { "stop" }
         currentProgress = player?.currentPosition ?: -1
         progress?.invoke(currentProgress)
+        isPlaying = false
         player?.playWhenReady = false
     }
 
