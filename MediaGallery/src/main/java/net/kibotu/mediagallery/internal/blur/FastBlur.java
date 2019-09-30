@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.image;
+package net.kibotu.mediagallery.internal.blur;
 
 import android.graphics.Bitmap;
 

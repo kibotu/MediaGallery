@@ -18,11 +18,12 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_media_gallery.*
 import net.kibotu.android.recyclerviewpresenter.PresenterAdapter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
-import net.kibotu.mediagallery.internal.image.ImagePresenter
+import net.kibotu.mediagallery.internal.presenter.ImagePresenter
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.onClick
 import net.kibotu.mediagallery.internal.transformer.ZoomOutSlideTransformer
@@ -66,9 +67,22 @@ class MediaGalleryActivity : AppCompatActivity() {
         quit.onClick { finish() }
     }
 
+    private val factory: DrawableCrossFadeFactory = DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()
+
     private fun onUpdateBackground(bitmap: Bitmap?) {
         if (!isBlurrable) return
-        blurryBackground.blur(bitmap ?: return)
+
+        blurryBackground.crossfade(bitmap!!)
+
+//        blurryBackground.blurWith(bitmap ?: return) {
+//
+//            Glide.with(blurryBackground)
+//                .load(it)
+//                .skipMemoryCache(true)
+////                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .transition(withCrossFade(factory))
+//                .into(blurryBackground)
+//        }
     }
 
     private fun preload(amount: Int?, items: List<PresenterModel<MediaData>>, requestOptions: RequestOptions) {

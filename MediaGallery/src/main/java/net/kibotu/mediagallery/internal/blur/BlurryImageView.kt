@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.image
+package net.kibotu.mediagallery.internal.blur
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import net.kibotu.mediagallery.internal.log
 
@@ -22,7 +21,9 @@ internal class BlurryImageView @JvmOverloads constructor(
     private var blurryBitmap: Bitmap? = null
 
     fun blur(bitmap: Bitmap?) {
-        blurWith(bitmap)
+        blurWith(bitmap) {
+            setImageBitmap(bitmap)
+        }
     }
 
     /**
@@ -35,7 +36,7 @@ internal class BlurryImageView @JvmOverloads constructor(
             context!!.resources.displayMetrics
         )
 
-    private fun ImageView.blurWith(bitmap: Bitmap?, radius: Int = 10, scaleFactor: Float = 8f) {
+    fun blurWith(bitmap: Bitmap?, radius: Int = 20, scaleFactor: Float = 4f, onBlurredBitmap: (Bitmap) -> Unit) {
 
         if (bitmap == null)
             return
@@ -68,7 +69,7 @@ internal class BlurryImageView @JvmOverloads constructor(
 
         blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, true)
 
-        setImageBitmap(blurryBitmap)
+        onBlurredBitmap.invoke(blurryBitmap!!)
 
         log { "view=[$measuredWidth:$measuredHeight]: bitmap=[${bitmap.width}:${bitmap.height}] overlay=[${blurryBitmap?.width}:${blurryBitmap?.height}] in ${System.currentTimeMillis() - startMs} ms" }
     }

@@ -83,6 +83,8 @@ class MainActivity : AppCompatActivity() {
                 media = uris.map { MediaData(uri = it) }
             }.startActivity()
         }
+
+        mixed_gallery.performClick()
     }
 }
 

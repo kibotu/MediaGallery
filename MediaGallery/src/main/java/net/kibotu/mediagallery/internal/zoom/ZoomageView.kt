@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.image
+package net.kibotu.mediagallery.internal.zoom
 
 import android.content.Context
 import android.content.res.Configuration

@@ -32,3 +32,6 @@
 # for DexGuard only
 -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 -keep class com.bumptech.glide.GeneratedAppGlideModuleImpl
+
+-keep class android.support.v8.renderscript.** { *; }
+-keep class androidx.renderscript.** { *; }

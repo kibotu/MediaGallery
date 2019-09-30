@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.image
+package net.kibotu.mediagallery.internal.presenter
 
 import android.graphics.Bitmap
 import androidx.core.view.isGone

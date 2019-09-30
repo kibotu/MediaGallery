@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.progress2;
+package net.kibotu.mediagallery.internal.progress;
 
 import android.content.Context;
 import android.os.Handler;
