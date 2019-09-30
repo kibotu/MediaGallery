@@ -19,6 +19,7 @@ import net.kibotu.android.recyclerviewpresenter.PresenterAdapter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
 import net.kibotu.mediagallery.internal.image.ImagePresenter
 import net.kibotu.mediagallery.internal.log
+import net.kibotu.mediagallery.internal.transformer.ZoomOutSlideTransformer
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -40,7 +41,7 @@ class MediaGalleryActivity : AppCompatActivity() {
         )
         adapter.registerPresenter(imagePresenter)
         pager.adapter = adapter
-        pager.setPageTransformer(DepthPageTransformer())
+        pager.setPageTransformer(ZoomOutSlideTransformer())
 
         val items = (params?.media ?: emptyList()).map { PresenterModel(it, R.layout.media_gallery_item_presenter) }
 

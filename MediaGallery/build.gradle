@@ -114,8 +114,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.viewpagerTransformers
-
     implementation libs.recyclerViewPresenter4
     implementation libs.zoomage
     implementation libs.numberprogressbar
