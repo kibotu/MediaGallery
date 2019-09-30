@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.AppCompat.DayNight.NoActionBar.FullScreen" parent="@style/Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- is used to indicate whether there should be title on the window or not. -->
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
+        <!-- is used to overlay over the foreground of the window content area, usually to place a shadow below the title. -->
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <!-- is used to indicate whether the current window is floating or not. -->
+        <!--        <item name="android:windowIsFloating">true</item>-->
+        <!-- is used to indicate whether the dimming behind the window is enabled or not. -->
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <!-- is used to indicate whether there should be actionbar or not. -->
+        <item name="android:windowActionBar">false</item>
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
+        <!-- indicates weather the window in which the activity is present in translucent state or not. It must be a boolean value i.e. it can be true or false. -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowEnableSplitTouch">false</item>
+        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+        <item name="android:windowTranslucentNavigation" tools:targetApi="kitkat">true</item>
+        <!-- is used to set the background of the main window. Here, we are setting the background as transparent. -->
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
 </resources>

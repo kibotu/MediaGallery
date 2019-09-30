@@ -8,8 +8,11 @@ import com.exozet.android.core.utils.MathExtensions
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kibotu.logger.LogcatLogger
 import net.kibotu.logger.Logger
+import net.kibotu.logger.Logger.logv
 import net.kibotu.mediagallery.MediaData
 import net.kibotu.mediagallery.MediaGalleryActivity
+import net.kibotu.resourceextension.screenHeightPixels
+import net.kibotu.resourceextension.screenWidthPixels
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +22,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         Logger.addLogger(LogcatLogger())
+
+        logv { "window=${screenWidthPixels}x$screenHeightPixels " }
 
         // [] list of media objects
         // [] images
