@@ -4,13 +4,16 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.exozet.android.core.extensions.onClick
+import com.exozet.android.core.extensions.parseAssetFile
 import com.exozet.android.core.utils.MathExtensions
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kibotu.logger.LogcatLogger
 import net.kibotu.logger.Logger
 import net.kibotu.logger.Logger.logv
-import net.kibotu.mediagallery.MediaData
 import net.kibotu.mediagallery.MediaGalleryActivity
+import net.kibotu.mediagallery.data.AssetVideo
+import net.kibotu.mediagallery.data.Image
+import net.kibotu.mediagallery.data.MediaData
 import net.kibotu.resourceextension.screenHeightPixels
 import net.kibotu.resourceextension.screenWidthPixels
 import kotlin.random.Random
@@ -25,14 +28,26 @@ class MainActivity : AppCompatActivity() {
 
         logv { "window=${screenWidthPixels}x$screenHeightPixels " }
 
-        // [] list of media objects
-        // [] images
+        // [] list of imageMedia objects
+        // [x] images
         // [] streaming urls
         // [] click listener
-        // [] zoomable
+        // [x] zoomable
+        // [x] translatable
         // [] player controls
-        // [] blurry
+        // [x] blurry
+        // [x] crossfade background
+        // [x] quit button
+        // [] youtube videos
+        // [] swipe down to quit
+        // [x] preload
+        // [] preload progressbar
+        // [] viewpager indicators
 
+        val youtubeVideo = "Q-oluoEQCk0"
+        val youtube360Video = "fRcgZnLvwhE"
+
+        // server supports content-length header (required for progress)
         val list = listOf(
             "https://api1.europapark.de/detail-5.7/haupteingang.jpg",
             "https://api1.europapark.de/detail-5.7/silverstar_1.jpg",
@@ -45,6 +60,9 @@ class MainActivity : AppCompatActivity() {
             "https://api1.europapark.de/detail-5.7/silverstar_8.jpg"
         ).map { Uri.parse(it) }
 
+        val assetVideo = AssetVideo(uri = "walkaround_with_additional_iframes.mp4".parseAssetFile())
+        val hlsVideo = AssetVideo(uri = Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"))
+
         image_gallery.onClick {
             var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this) {
@@ -53,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
-                media = uris.map { MediaData(uri = it) }
+                media = uris.map { Image(uri = it) }
                 preload = media.size
             }.startActivity()
         }
@@ -66,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
-                media = uris.map { MediaData(uri = it) }
+                media = uris.map { Image(uri = it) }
                 preload = media.size.coerceAtMost(10)
             }.startActivity()
         }
@@ -80,7 +98,22 @@ class MainActivity : AppCompatActivity() {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
-                media = uris.map { MediaData(uri = it) }
+                media = mutableListOf<MediaData>().apply {
+                    addAll(uris.map { Image(uri = it) })
+                    add(3, assetVideo)
+                }
+            }.startActivity()
+        }
+
+        youtube_videos.onClick {
+            MediaGalleryActivity.Builder.with(this) {
+                autoPlay = true
+                isBlurrable = true
+                isTranslatable = true
+                isZoomable = true
+                showVideoControls = true
+                media = listOf(assetVideo, assetVideo, assetVideo, assetVideo)
+                preload = media.size.coerceAtMost(10)
             }.startActivity()
         }
 

@@ -61,6 +61,7 @@ internal class BlurryImageView @JvmOverloads constructor(
         val canvas = Canvas(blurryBitmap!!)
         // todo move blur background to center, possible scale back
 //         canvas.translate(-left.toFloat() + -measuredWidth / 2f, -top.toFloat() / 2f)
+        canvas.scale(0.5f, 0.5f)
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
         blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, true)

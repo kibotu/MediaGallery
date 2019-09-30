@@ -12,12 +12,12 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCross
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.daimajia.numberprogressbar.NumberProgressBar
-import kotlinx.android.synthetic.main.media_gallery_item_presenter.view.*
+import kotlinx.android.synthetic.main.media_gallery_image_presenter.view.*
 import net.kibotu.android.recyclerviewpresenter.Adapter
 import net.kibotu.android.recyclerviewpresenter.Presenter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
-import net.kibotu.mediagallery.MediaData
 import net.kibotu.mediagallery.R
+import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.progress.ProgressInfo
 import net.kibotu.mediagallery.internal.progress.ProgressListener
@@ -29,13 +29,13 @@ internal class ImagePresenter(
     val isTranslatable: Boolean = true,
     val isZoomable: Boolean = true,
     var onResourceReady: ((Bitmap?) -> Unit)? = null
-) : Presenter<MediaData>() {
+) : Presenter<Image>() {
 
-    override val layout = R.layout.media_gallery_item_presenter
+    override val layout = R.layout.media_gallery_image_presenter
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: PresenterModel<MediaData>, position: Int, payloads: MutableList<Any>?, adapter: Adapter) {
+    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: PresenterModel<Image>, position: Int, payloads: MutableList<Any>?, adapter: Adapter) {
 
-        log { "$position ${item.model}" }
+        log { "bindViewHolder $position ${item.model}" }
 
         with(viewHolder.itemView) {
 

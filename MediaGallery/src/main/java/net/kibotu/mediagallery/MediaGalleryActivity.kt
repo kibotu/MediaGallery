@@ -4,12 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.KITKAT
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.View
-import android.view.WindowManager
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -18,14 +15,18 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_media_gallery.*
 import net.kibotu.android.recyclerviewpresenter.PresenterAdapter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
+import net.kibotu.mediagallery.data.AssetVideo
+import net.kibotu.mediagallery.data.Image
+import net.kibotu.mediagallery.data.MediaData
+import net.kibotu.mediagallery.internal.hideSystemUI
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.onClick
 import net.kibotu.mediagallery.internal.presenter.ImagePresenter
+import net.kibotu.mediagallery.internal.presenter.VideoPresenter
 import net.kibotu.mediagallery.internal.requestOptions
 import net.kibotu.mediagallery.internal.transformer.ZoomOutSlideTransformer
 import java.lang.ref.WeakReference
@@ -45,66 +46,80 @@ class MediaGalleryActivity : AppCompatActivity() {
 
         val params: Builder.Options? = intent?.extras?.getParcelable(Builder.Options::class.java.canonicalName)
 
+        if (params == null) {
+            Log.w("MediaGalleryActivity", "no params set, please use MediaGalleryActivity.Builder#with")
+            finish()
+            return
+        }
+
         log { "params=$params" }
 
-        isBlurrable = params?.isBlurrable ?: true
+        root.keepScreenOn = params.keepOnScreen
+
+        isBlurrable = params.isBlurrable
 
         val adapter = PresenterAdapter()
+
         val imagePresenter = ImagePresenter(
-            isZoomable = params?.isZoomable == true,
-            isTranslatable = params?.isTranslatable == true,
+            isZoomable = params.isZoomable,
+            isTranslatable = params.isTranslatable,
             onResourceReady = this::onUpdateBackground
         )
         adapter.registerPresenter(imagePresenter)
+        adapter.registerPresenter(
+            VideoPresenter(
+                showVideoControls = params.showVideoControls,
+                showVideoControlsTimeOut = params.showVideoControlsTimeOut,
+                autoPlay = params.autoPlay
+            )
+        )
 
         pager.setPageTransformer(ZoomOutSlideTransformer())
         pager.adapter = adapter
 
-        val items = (params?.media ?: emptyList()).map { PresenterModel(it, R.layout.media_gallery_item_presenter) }
-        preload(params?.preload, items, requestOptions)
+        val items = (params.media).map {
+            PresenterModel(
+                it, when (it) {
+                    is AssetVideo -> R.layout.media_gallery_video_presenter
+                    else -> R.layout.media_gallery_image_presenter
+                }
+            )
+        }
+        preload(params.preload, params.media.filterIsInstance(Image::class.java), requestOptions)
 
         adapter.submitList(items)
 
         quit.onClick { finish() }
     }
 
-    private val factory: DrawableCrossFadeFactory = DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()
-
     private fun onUpdateBackground(bitmap: Bitmap?) {
         if (!isBlurrable) return
 
         blurryBackground.crossfade(bitmap!!)
-
-//        blurryBackground.blurWith(bitmap ?: return) {
-//
-//            Glide.with(blurryBackground)
-//                .load(it)
-//                .skipMemoryCache(true)
-////                .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                .transition(withCrossFade(factory))
-//                .into(blurryBackground)
-//        }
     }
 
-    private fun preload(amount: Int?, items: List<PresenterModel<MediaData>>, requestOptions: RequestOptions) {
+    override fun onDestroy() {
+        requests?.forEach { it.request?.clear() }
+        pager.adapter = null
+        super.onDestroy()
+    }
+
+    // region glide pre-loading
+
+    private fun preload(amount: Int?, items: List<Image>?, requestOptions: RequestOptions) {
         if (amount == null)
             return
 
         val counter = AtomicInteger(0)
 
-        requests = items.take(amount).map {
+        requests = items?.take(amount)?.map {
 
             Glide.with(applicationContext!!)
                 .applyDefaultRequestOptions(requestOptions.priority(Priority.NORMAL))
-                .load(it.model.uri)
+                .load(it.uri)
                 .addListener(GlidePreloadListener(counter, items.size))
                 .preload()
         }
-    }
-
-    override fun onDestroy() {
-        requests?.forEach { it.request?.clear() }
-        super.onDestroy()
     }
 
     private class GlidePreloadListener(val counter: AtomicInteger, val total: Int) : RequestListener<Drawable> {
@@ -120,6 +135,8 @@ class MediaGalleryActivity : AppCompatActivity() {
         }
     }
 
+    // endregion
+
     // region builder
 
     class Builder private constructor() {
@@ -134,9 +151,14 @@ class MediaGalleryActivity : AppCompatActivity() {
             var autoPlay: Boolean = false,
             var isZoomable: Boolean = true,
             var isTranslatable: Boolean = true,
-            var showVideoControls: Boolean = false,
             var isBlurrable: Boolean = true,
-            var preload: Int? = null
+            var preload: Int? = null,
+            var showVideoControls: Boolean = false,
+            /**
+             * Video controls show time int in millis.
+             */
+            var showVideoControlsTimeOut: Int = 750,
+            var keepOnScreen: Boolean = true
         ) : Parcelable
 
         fun startActivity() = context.get()!!.startActivity(with(Intent(context.get(), MediaGalleryActivity::class.java)) { putExtra(Options::class.java.canonicalName, options) })
@@ -153,28 +175,6 @@ class MediaGalleryActivity : AppCompatActivity() {
     // endregion
 
     // region full screen
-
-    /**
-     * https://developer.android.com/training/system-ui/immersive
-     */
-    private fun hideSystemUI() {
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-
-        if (SDK_INT < KITKAT) return
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
-    }
-
-    private fun showSystemUI() {
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-    }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)

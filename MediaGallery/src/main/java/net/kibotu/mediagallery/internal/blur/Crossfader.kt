@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.ViewSwitcher
 import androidx.core.view.isInvisible
-import com.bumptech.glide.Glide
 
 internal class Crossfader(context: Context?, attrs: AttributeSet?) : ViewSwitcher(context, attrs) {
 

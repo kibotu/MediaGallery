@@ -137,6 +137,10 @@ dependencies {
     implementation libs.okhttp4
     implementation libs.okhttp3LoggingInterceptor
 
+    implementation libs.youtubeExtractor
+    implementation libs.exoplayer
+    implementation libs.md360Player
+
     // implementation libs.progressManager
 }
 
