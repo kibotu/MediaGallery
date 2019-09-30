@@ -36,7 +36,7 @@ internal class BlurryImageView @JvmOverloads constructor(
             context!!.resources.displayMetrics
         )
 
-    fun blurWith(bitmap: Bitmap?, radius: Int = 20, scaleFactor: Float = 4f, onBlurredBitmap: (Bitmap) -> Unit) {
+    fun blurWith(bitmap: Bitmap?, radius: Int = 10, scaleFactor: Float = 8f, onBlurredBitmap: (Bitmap) -> Unit) {
 
         if (bitmap == null)
             return
@@ -56,21 +56,17 @@ internal class BlurryImageView @JvmOverloads constructor(
         val startMs = System.currentTimeMillis()
 
         if (blurryBitmap == null)
-            blurryBitmap = Bitmap.createBitmap(
-                (width / scaleFactor).toInt(),
-                (height / scaleFactor).toInt(),
-                Bitmap.Config.RGB_565
-            )
+            blurryBitmap = Bitmap.createBitmap((width / scaleFactor).toInt(), (height / scaleFactor).toInt(), Bitmap.Config.RGB_565)
 
         val canvas = Canvas(blurryBitmap!!)
+        // todo move blur background to center, possible scale back
 //         canvas.translate(-left.toFloat() + -measuredWidth / 2f, -top.toFloat() / 2f)
-//        canvas.scale(1 / scaleFactor, 1 / scaleFactor)
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
         blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, true)
 
         onBlurredBitmap.invoke(blurryBitmap!!)
 
-        log { "view=[$measuredWidth:$measuredHeight]: bitmap=[${bitmap.width}:${bitmap.height}] overlay=[${blurryBitmap?.width}:${blurryBitmap?.height}] in ${System.currentTimeMillis() - startMs} ms" }
+        log { "view=[$measuredWidth:$measuredHeight]: bitmap=[${bitmap.width}:${bitmap.height}] blurryBitmap=[${blurryBitmap?.width}:${blurryBitmap?.height}] canvas=${canvas.width}x${canvas.height} in ${System.currentTimeMillis() - startMs} ms sx=${(width / scaleFactor).toInt()} sy=${(width / scaleFactor).toInt()}" }
     }
 }

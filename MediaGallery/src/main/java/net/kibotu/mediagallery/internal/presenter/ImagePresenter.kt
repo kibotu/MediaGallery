@@ -7,14 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import com.daimajia.numberprogressbar.NumberProgressBar
 import kotlinx.android.synthetic.main.media_gallery_item_presenter.view.*
 import net.kibotu.android.recyclerviewpresenter.Adapter
@@ -26,6 +22,7 @@ import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.progress.ProgressInfo
 import net.kibotu.mediagallery.internal.progress.ProgressListener
 import net.kibotu.mediagallery.internal.progress.ProgressManager
+import net.kibotu.mediagallery.internal.requestOptions
 
 
 internal class ImagePresenter(
@@ -62,7 +59,7 @@ internal class ImagePresenter(
                 .asBitmap()
                 .load(item.model.uri)
                 .apply(requestOptions.priority(Priority.IMMEDIATE))
-                .transition(crossFade!!)
+                .transition(withCrossFade())
                 .listener(object : RequestListener<Bitmap?> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap?>?, isFirstResource: Boolean): Boolean {
                         number_progress_bar.isGone = true
@@ -80,21 +77,6 @@ internal class ImagePresenter(
                 .clearOnDetach()
         }
     }
-
-    val requestOptions by lazy {
-
-        RequestOptions
-            .fitCenterTransform()
-            .priority(Priority.IMMEDIATE)
-            .dontAnimate()
-            .override(1024)
-            .downsample(DownsampleStrategy.CENTER_INSIDE)
-            .skipMemoryCache(false)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-    }
-
-    private val crossFade: BitmapTransitionOptions? =
-        BitmapTransitionOptions.withCrossFade(DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build())
 }
 
 internal class GlideProgressListener(

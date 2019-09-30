@@ -23,9 +23,10 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_media_gallery.*
 import net.kibotu.android.recyclerviewpresenter.PresenterAdapter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
-import net.kibotu.mediagallery.internal.presenter.ImagePresenter
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.onClick
+import net.kibotu.mediagallery.internal.presenter.ImagePresenter
+import net.kibotu.mediagallery.internal.requestOptions
 import net.kibotu.mediagallery.internal.transformer.ZoomOutSlideTransformer
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicInteger
@@ -60,7 +61,7 @@ class MediaGalleryActivity : AppCompatActivity() {
         pager.adapter = adapter
 
         val items = (params?.media ?: emptyList()).map { PresenterModel(it, R.layout.media_gallery_item_presenter) }
-        preload(params?.preload, items, imagePresenter.requestOptions)
+        preload(params?.preload, items, requestOptions)
 
         adapter.submitList(items)
 
