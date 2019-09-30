@@ -138,6 +138,7 @@ dependencies {
     implementation libs.androidKtxCore
     implementation libs.exozetCore
     implementation libs.logger
+    implementation libs.rxpermissions
 
     implementation project(":MediaGallery")
 
@@ -146,6 +147,9 @@ dependencies {
     implementation libs.lifecycleCommonJava8
     kapt libs.glideAnnotationsProcessor
 
+    implementation libs.rx2java
+    implementation libs.rx2Android
+    implementation libs.rx2Kotlin
 
     debugImplementation 'com.facebook.flipper:flipper:0.25.0'
     debugImplementation 'com.facebook.soloader:soloader:0.8.0'

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.ViewGroup
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
@@ -13,8 +14,12 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import net.kibotu.android.recyclerviewpresenter.RecyclerViewHolder
+import net.kibotu.mediagallery.BuildConfig
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Video
+import net.kibotu.mediagallery.internal.parseAssetFile
+import net.kibotu.mediagallery.internal.parseExternalStorageFile
+import net.kibotu.mediagallery.internal.parseInternalStorageFile
 
 
 internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHolder(parent, layout) {
@@ -31,7 +36,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         }
         get() = playerView.player as? SimpleExoPlayer?
 
-    private val enableLogging = false
+    private val enableLogging = BuildConfig.DEBUG
 
     private fun logv(block: () -> String?) {
         if (enableLogging)
@@ -79,12 +84,15 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         val defaultDataSourceFactory = DefaultDataSourceFactory(application, "exoplayer")
 
         val mediaSource = when (type) {
-            Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory)
-            Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true)
-            else -> HlsMediaSource.Factory(defaultDataSourceFactory)
-        }.createMediaSource(uri)
+            Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseAssetFile())
+            Video.Type.EXTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseExternalStorageFile())
+            Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
+            Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri)
+            /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+        }
 
         player!!.repeatMode = Player.REPEAT_MODE_ALL
+        player!!.seekParameters = SeekParameters.CLOSEST_SYNC
         player!!.prepare(mediaSource)
 
     }

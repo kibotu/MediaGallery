@@ -1,8 +1,11 @@
 package net.kibotu.mediagallery.internal
 
 import android.app.Activity
+import android.content.Context
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewTreeObserver
@@ -11,6 +14,7 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
+import java.io.File
 
 
 internal fun View.waitForLayout(block: (() -> Unit)?) {
@@ -74,3 +78,14 @@ internal fun Activity.showSystemUI() {
             or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
 }
+
+internal fun String.parseAssetFile(): Uri = Uri.parse("file:///android_asset/$this")
+
+internal fun String.parseInternalStorageFile(context: Context): Uri = Uri.parse("${context.applicationContext!!.filesDir.absolutePath}/$this")
+
+internal fun String.parseExternalStorageFile(): Uri = Uri.parse("${Environment.getExternalStorageDirectory()}/$this")
+
+internal fun String.parseFile(): Uri = Uri.fromFile(File(this))
+
+internal val Uri.fileExists: Boolean
+    get() = File(toString()).exists()

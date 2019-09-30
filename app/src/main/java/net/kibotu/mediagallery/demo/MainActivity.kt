@@ -1,38 +1,54 @@
 package net.kibotu.mediagallery.demo
 
+import android.Manifest
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.exozet.android.core.base.CompositeDisposableHolder
+import com.exozet.android.core.extensions.fileExists
 import com.exozet.android.core.extensions.onClick
 import com.exozet.android.core.extensions.parseAssetFile
-import com.exozet.android.core.utils.MathExtensions
+import com.tbruyelle.rxpermissions2.RxPermissions
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kibotu.logger.LogcatLogger
 import net.kibotu.logger.Logger
 import net.kibotu.logger.Logger.logv
+import net.kibotu.logger.Logger.logw
 import net.kibotu.mediagallery.MediaGalleryActivity
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.data.MediaData
 import net.kibotu.mediagallery.data.Video
 import net.kibotu.resourceextension.screenHeightPixels
 import net.kibotu.resourceextension.screenWidthPixels
-import kotlin.random.Random
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         Logger.addLogger(LogcatLogger())
+        RxPermissions(this)
+            .requestEachCombined(Manifest.permission.READ_EXTERNAL_STORAGE)
+            .subscribe({
+                if (it.granted)
+                    init()
+            }, {
+                logw { "permission $it" }
+            }).addTo(subscription)
+    }
 
+    private fun init() {
         logv { "window=${screenWidthPixels}x$screenHeightPixels " }
 
         // [x] list of imageMedia objects
         // [] list of video media objects
         // [x] asset uris
         // [x] hls uris
-        // [] file uri
+        // [x] file uri
         // [] youtube
         // [] 360
         // [] youtube 360
@@ -68,8 +84,13 @@ class MainActivity : AppCompatActivity() {
             "https://api1.europapark.de/detail-5.7/silverstar_8.jpg"
         ).map { Uri.parse(it) }
 
-        val assetVideo = Video(uri = "walkaround_with_additional_iframes.mp4".parseAssetFile(), type = Video.Type.ASSETS)
-        val hlsVideo = Video(uri = Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"), type = Video.Type.HLS)
+        val assetVideo = Video(uri = "walkaround_with_additional_iframes.mp4", type = Video.Type.ASSETS)
+        val externalStorageVideo = Video(uri = "Download/walkaround.mp4", type = Video.Type.EXTERNAL_STORAGE)
+        val internalStorageVideo = Video(uri = "walkaround.mp4", type = Video.Type.INTERNAL_STORAGE)
+        val fileVideo = Video(uri = "walkaround.mp4".parseAssetFile(), type = Video.Type.FILE)
+        val hlsVideo = Video(uri = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8", type = Video.Type.HLS)
+
+        logv { "exists: ${externalStorageVideo.uri} ${externalStorageVideo.uri.fileExists}" }
 
         image_gallery.onClick {
             var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
@@ -92,8 +113,13 @@ class MainActivity : AppCompatActivity() {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
-                media = uris.map { Image(uri = it) }
-                preload = media.size.coerceAtMost(10)
+                media = mutableListOf<MediaData>().apply {
+                    add(assetVideo)
+                    add(externalStorageVideo)
+                    add(internalStorageVideo)
+                    add(fileVideo)
+                    add(hlsVideo)
+                }
             }.startActivity()
         }
 
@@ -108,11 +134,12 @@ class MainActivity : AppCompatActivity() {
                 showVideoControls = true
                 autoPlay = true
                 media = mutableListOf<MediaData>().apply {
-                    add(hlsVideo)
                     add(assetVideo)
+                    add(hlsVideo)
+                    add(fileVideo)
+                    add(externalStorageVideo)
                     addAll(uris.map { Image(uri = it) })
-                    add(3, assetVideo)
-                    add(5, assetVideo)
+
                 }
             }.startActivity()
         }
@@ -132,22 +159,15 @@ class MainActivity : AppCompatActivity() {
 
         mixed_gallery.performClick()
     }
-}
 
-val categories by lazy {
-    listOf("abstract", "animals", "business", "cats", "city", "food", "nightlife", "fashion", "people", "nature", "sports", "technics", "transport")
-}
+    // region CompositeDisposableHolder
 
-fun createRandomImageUrl(): String {
+    override var subscription = CompositeDisposable()
 
-    val maxWidth = 1080
-    val maxHeight = 1920
+    override fun disposeCompositeDisposable() {
+        if (!subscription.isDisposed)
+            subscription.dispose()
+    }
 
-    val landscape = Random.nextBoolean()
-    val endpoint = Random.nextBoolean()
-
-    val width = MathExtensions.random(maxWidth, maxHeight)
-    val height = MathExtensions.random(maxWidth, maxHeight)
-
-    return "https://lorempixel.com/${categories.random()}/%d/%d".format(if (landscape) width else height, if (landscape) height else width)
+    // endregion
 }
