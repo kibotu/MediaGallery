@@ -119,11 +119,14 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
                 isZoomable = true
                 showVideoControls = true
                 media = mutableListOf<MediaData>().apply {
+                    add(youtubeVideo)
+                    add(youtube360Video)
+                    add(youtubeHlsVideo)
                     add(assetVideo)
                     add(externalStorageVideo)
                     add(internalStorageVideo)
-                    add(fileVideo)
                     add(hlsVideo)
+                    add(fileVideo)
                 }
             }.startActivity()
         }
@@ -142,12 +145,12 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
                     add(youtubeVideo)
                     add(youtube360Video)
                     add(youtubeHlsVideo)
-                    add(assetVideo)
                     add(hlsVideo)
-                    add(fileVideo)
-                    add(externalStorageVideo)
                     addAll(uris.map { Image(uri = it) })
-
+                    add(assetVideo)
+                    add(externalStorageVideo)
+                    add(internalStorageVideo)
+                    add(fileVideo)
                 }
             }.startActivity()
         }
@@ -159,13 +162,10 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
-                media = listOf(assetVideo, assetVideo, assetVideo, assetVideo)
-                preload = media.size.coerceAtMost(10)
+                media = listOf(youtubeVideo, youtube360Video, youtubeHlsVideo)
                 autoPlay = false
             }.startActivity()
         }
-
-        mixed_gallery.performClick()
     }
 
     // region CompositeDisposableHolder
