@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
 
 internal class ZoomageView @JvmOverloads constructor(
     context: Context,
@@ -23,6 +22,10 @@ internal class ZoomageView @JvmOverloads constructor(
             super.onTouchEvent(event)
         }
         else -> {
+
+            // consume touch event inside scroll container like view pagers
+            parent.requestDisallowInterceptTouchEvent(true)
+
             isTranslatable = true
             super.onTouchEvent(event)
         }

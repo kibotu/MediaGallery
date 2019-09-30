@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.image
+package net.kibotu.mediagallery.internal.gestures
 
 import android.content.Context
 import android.util.AttributeSet

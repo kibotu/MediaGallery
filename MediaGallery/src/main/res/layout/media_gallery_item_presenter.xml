@@ -35,7 +35,7 @@
         app:zoomage_translatable="true"
         app:zoomage_zoomable="true" />
 
-    <net.kibotu.mediagallery.internal.image.SwipeDistanceView
+    <net.kibotu.mediagallery.internal.gestures.SwipeDistanceView
         android:id="@+id/swipe_detector"
         android:layout_width="0dp"
         android:layout_height="0dp"

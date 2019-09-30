@@ -1,4 +1,4 @@
-package net.kibotu.mediagallery.internal.image
+package net.kibotu.mediagallery.internal.gestures
 
 import android.view.GestureDetector
 import android.view.MotionEvent
