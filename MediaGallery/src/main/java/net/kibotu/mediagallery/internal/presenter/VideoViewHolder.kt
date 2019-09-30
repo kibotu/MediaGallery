@@ -31,7 +31,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         }
         get() = playerView.player as? SimpleExoPlayer?
 
-    private val enableLogging = true
+    private val enableLogging = false
 
     private fun logv(block: () -> String?) {
         if (enableLogging)

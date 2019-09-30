@@ -1,6 +1,5 @@
 package net.kibotu.mediagallery.internal.presenter
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
@@ -33,7 +32,7 @@ class VideoPresenter(
             player_view.controllerShowTimeoutMs = showVideoControlsTimeOut
 
             with(viewHolder as VideoViewHolder) {
-                autoPlay = autoPlay
+                autoPlay = this@VideoPresenter.autoPlay
                 uri = item.model.uri
                 currentProgress = item.model.progress
                 type = item.model.type
