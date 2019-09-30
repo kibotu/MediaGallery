@@ -11,9 +11,9 @@ import net.kibotu.logger.LogcatLogger
 import net.kibotu.logger.Logger
 import net.kibotu.logger.Logger.logv
 import net.kibotu.mediagallery.MediaGalleryActivity
-import net.kibotu.mediagallery.data.AssetVideo
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.data.MediaData
+import net.kibotu.mediagallery.data.Video
 import net.kibotu.resourceextension.screenHeightPixels
 import net.kibotu.resourceextension.screenWidthPixels
 import kotlin.random.Random
@@ -28,13 +28,20 @@ class MainActivity : AppCompatActivity() {
 
         logv { "window=${screenWidthPixels}x$screenHeightPixels " }
 
-        // [] list of imageMedia objects
+        // [x] list of imageMedia objects
+        // [] list of video media objects
+        // [x] asset uris
+        // [x] hls uris
+        // [] file uri
+        // [] youtube
+        // [] 360
+        // [] youtube 360
         // [x] images
         // [] streaming urls
         // [] click listener
         // [x] zoomable
         // [x] translatable
-        // [] player controls
+        // [x] player controls
         // [x] blurry
         // [x] crossfade background
         // [x] quit button
@@ -43,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         // [x] preload
         // [] preload progressbar
         // [] viewpager indicators
+        // [x] resume seek position
 
         val youtubeVideo = "Q-oluoEQCk0"
         val youtube360Video = "fRcgZnLvwhE"
@@ -60,8 +68,8 @@ class MainActivity : AppCompatActivity() {
             "https://api1.europapark.de/detail-5.7/silverstar_8.jpg"
         ).map { Uri.parse(it) }
 
-        val assetVideo = AssetVideo(uri = "walkaround_with_additional_iframes.mp4".parseAssetFile())
-        val hlsVideo = AssetVideo(uri = Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"))
+        val assetVideo = Video(uri = "walkaround_with_additional_iframes.mp4".parseAssetFile(), type = Video.Type.ASSETS)
+        val hlsVideo = Video(uri = Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"), type = Video.Type.HLS)
 
         image_gallery.onClick {
             var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
@@ -100,8 +108,11 @@ class MainActivity : AppCompatActivity() {
                 showVideoControls = true
                 autoPlay = true
                 media = mutableListOf<MediaData>().apply {
+                    add(hlsVideo)
+                    add(assetVideo)
                     addAll(uris.map { Image(uri = it) })
                     add(3, assetVideo)
+                    add(5, assetVideo)
                 }
             }.startActivity()
         }

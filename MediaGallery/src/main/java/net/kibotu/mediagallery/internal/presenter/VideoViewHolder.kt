@@ -6,13 +6,15 @@ import android.view.ViewGroup
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import net.kibotu.android.recyclerviewpresenter.RecyclerViewHolder
 import net.kibotu.mediagallery.R
+import net.kibotu.mediagallery.data.Video
 
 
 internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHolder(parent, layout) {
@@ -29,7 +31,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         }
         get() = playerView.player as? SimpleExoPlayer?
 
-    private val enableLogging = false
+    private val enableLogging = true
 
     private fun logv(block: () -> String?) {
         if (enableLogging)
@@ -73,10 +75,21 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     private fun prepare() {
         logv { "prepare uri=$uri" }
-        val mediaSource = ExtractorMediaSource.Factory(DefaultDataSourceFactory(application, "exoplayer")).createMediaSource(uri)
+
+        val defaultDataSourceFactory = DefaultDataSourceFactory(application, "exoplayer")
+
+        val mediaSource = when (type) {
+            Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory)
+            Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true)
+            else -> HlsMediaSource.Factory(defaultDataSourceFactory)
+        }.createMediaSource(uri)
+
         player!!.repeatMode = Player.REPEAT_MODE_ALL
         player!!.prepare(mediaSource)
+
     }
+
+    var type: Video.Type = Video.Type.ASSETS
 
     var uri: Uri? = null
 
@@ -88,12 +101,12 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     var isPlaying: Boolean
         set(value) {
-            player!!.playWhenReady = value
+            player?.playWhenReady = value
         }
         get() = player?.playWhenReady == true
 
     private fun start() {
-        logv { "start" }
+        logv { "start from currentProgress=$currentProgress" }
         player!!.seekTo(currentProgress.coerceAtLeast(0))
         if (autoPlay) {
             isPlaying = true
@@ -102,11 +115,10 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
     }
 
     fun stop() {
-        logv { "stop" }
+        logv { "stop at currentProgress=$currentProgress" }
         currentProgress = player?.currentPosition ?: -1
         progress?.invoke(currentProgress)
         isPlaying = false
-        player?.playWhenReady = false
     }
 
     fun clear() {

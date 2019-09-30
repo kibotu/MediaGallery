@@ -19,9 +19,9 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_media_gallery.*
 import net.kibotu.android.recyclerviewpresenter.PresenterAdapter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
-import net.kibotu.mediagallery.data.AssetVideo
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.data.MediaData
+import net.kibotu.mediagallery.data.Video
 import net.kibotu.mediagallery.internal.hideSystemUI
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.onClick
@@ -80,7 +80,8 @@ class MediaGalleryActivity : AppCompatActivity() {
         val items = (params.media).map {
             PresenterModel(
                 it, when (it) {
-                    is AssetVideo -> R.layout.media_gallery_video_presenter
+                    is Video -> R.layout.media_gallery_video_presenter
+                    is Image -> R.layout.media_gallery_image_presenter
                     else -> R.layout.media_gallery_image_presenter
                 }
             )
