@@ -29,6 +29,8 @@ Features:
 - [ ] preload progressbar
 - [ ] viewpager indicators
 - [x] resume seek position
+- [x] scroll to position
+- [ ] return scroll position
 
 ### How to use
 
@@ -39,7 +41,11 @@ MediaGalleryActivity.Builder.with(this) {
     isTranslatable = true
     isZoomable = true
     showVideoControls = true
-    autoPlay = true
+    showVideoControlsTimeOut = 1750
+    autoPlay = true,
+    scrollPosition = 0
+    smoothScroll = true
+    preload = media.size
     media = mutableListOf<MediaData>().apply {
         add(youtubeVideo)
         add(youtube360Video)

@@ -90,6 +90,8 @@ class MediaGalleryActivity : AppCompatActivity() {
 
         adapter.submitList(items)
 
+        pager.setCurrentItem(params.scrollPosition, params.smoothScroll)
+
         quit.onClick { finish() }
     }
 
@@ -163,7 +165,9 @@ class MediaGalleryActivity : AppCompatActivity() {
              * Video controls show time int in millis.
              */
             var showVideoControlsTimeOut: Int = 1750,
-            var keepOnScreen: Boolean = true
+            var keepOnScreen: Boolean = true,
+            var scrollPosition: Int = 0,
+            var smoothScroll: Boolean = false
         ) : Parcelable
 
         fun startActivity() = context.get()!!.startActivity(with(Intent(context.get(), MediaGalleryActivity::class.java)) { putExtra(Options::class.java.canonicalName, options) })

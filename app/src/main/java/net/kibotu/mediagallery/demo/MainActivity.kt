@@ -107,6 +107,8 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
                 showVideoControls = true
                 media = uris.map { Image(uri = it) }
                 preload = media.size
+                scrollPosition = 3
+                smoothScroll = true
             }.startActivity()
         }
 

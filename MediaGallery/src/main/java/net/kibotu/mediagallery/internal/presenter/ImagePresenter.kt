@@ -42,8 +42,6 @@ internal class ImagePresenter(
             image.isZoomable = isZoomable
             image.isTranslatable = isTranslatable
 
-            image.view = swipe_detector
-
             val uri = item.model.uri.toString()
 
             ProgressManager.getInstance().addResponseListener(uri, GlideProgressListener(uri, number_progress_bar))
@@ -51,9 +49,6 @@ internal class ImagePresenter(
             number_progress_bar.isVisible = true
 
             image.setImageBitmap(null)
-//
-//            GlideImageLoader(imageBackground, image, number_progress_bar)
-//                .load(item.model.uri.toString(), requestOptions)
 
             Glide.with(context.applicationContext)
                 .asBitmap()

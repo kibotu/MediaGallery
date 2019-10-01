@@ -8,5 +8,6 @@ import java.util.*
 data class Image(
     val id: String = UUID.randomUUID().toString(),
     val uri: Uri
-) : MediaData
-
+) : MediaData {
+    constructor(id: String = UUID.randomUUID().toString(), uri: String) : this(id, Uri.parse(uri))
+}
