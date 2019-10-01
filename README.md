@@ -60,17 +60,17 @@ MediaGalleryActivity.Builder.with(this) {
 ```
 
 ### How to install
-
-	repositories {
-	    maven {
-	        url "https://jitpack.io"
-	    }
-	}
-
-	dependencies {
-        implementation 'com.github.kibotu:MediaGallery:-SNAPSHOT'
+```groovy
+repositories {
+    maven {
+	url "https://jitpack.io"
     }
+}
 
+dependencies {
+    implementation 'com.github.kibotu:MediaGallery:-SNAPSHOT'
+}
+``` 
 ### License
 
 <pre>
