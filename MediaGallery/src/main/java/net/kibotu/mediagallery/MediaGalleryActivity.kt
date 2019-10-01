@@ -101,6 +101,10 @@ class MediaGalleryActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         requests?.forEach { it.request?.clear() }
+        with(pager.adapter as PresenterAdapter) {
+            clear()
+            unregisterPresenter()
+        }
         pager.adapter = null
         super.onDestroy()
     }
@@ -158,7 +162,7 @@ class MediaGalleryActivity : AppCompatActivity() {
             /**
              * Video controls show time int in millis.
              */
-            var showVideoControlsTimeOut: Int = 750,
+            var showVideoControlsTimeOut: Int = 1750,
             var keepOnScreen: Boolean = true
         ) : Parcelable
 

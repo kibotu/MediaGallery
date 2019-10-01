@@ -25,6 +25,7 @@ import net.kibotu.mediagallery.data.Video
 import net.kibotu.mediagallery.internal.parseAssetFile
 import net.kibotu.mediagallery.internal.parseExternalStorageFile
 import net.kibotu.mediagallery.internal.parseInternalStorageFile
+import java.util.*
 
 
 internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHolder(parent, layout) {
@@ -92,32 +93,32 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
         val defaultDataSourceFactory = DefaultDataSourceFactory(application, "exoplayer")
 
-        val mediaSource = when (type) {
-            Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseAssetFile())
-            Video.Type.EXTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseExternalStorageFile())
-            Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
-            Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri)
-            Video.Type.YOUTUBE -> {
+        val mediaSource = when {
+            type == Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseAssetFile())
+            type == Video.Type.EXTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseExternalStorageFile())
+            type == Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
+            type == Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri)
+            type == Video.Type.YOUTUBE && uris.containsKey(uri) -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uris[uri])
+            type == Video.Type.YOUTUBE -> {
 
                 disposable = extractor.extract(uri.toString())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .map {
+                        it.videoStreams.firstOrNull { it.format == "MPEG4" }?.url?.toUri()
+                    }
                     .subscribe({
 
-                        logv { "$it" }
+                        logv { "play $it" }
 
-                        val uri = it.videoStreams.firstOrNull { it.format == "MPEG4" }?.url?.toUri() ?: return@subscribe
-
-                        logv { "play $uri" }
+                        // add to cache
+                        uris[uri] = it ?: return@subscribe
 
 //                        val source = HlsMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
-                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(it)
                         player?.prepare(source)
 
-                    }, {
-
-                        logv { "$it" }
-                    })
+                    }, { logv { "$it" } })
 
                 null
 
@@ -131,7 +132,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     }
 
-    var type: Video.Type = Video.Type.ASSETS
+    var type: Video.Type = Video.Type.FILE
 
     var uri: Uri? = null
 
@@ -175,5 +176,9 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
             disposable?.dispose()
         }
         disposable = null
+    }
+
+    companion object {
+        val uris = WeakHashMap<Uri, Uri>()
     }
 }

@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
         // [x] asset uris
         // [x] hls uris
         // [x] file uri
-        // [] youtube
+        // [x] youtube
         // [] 360
         // [] youtube 360
         // [x] images
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
         val youtube360Video = Video(uri = youtube360VideoId, enable360 = true, type = Video.Type.YOUTUBE)
         val assetVideo = Video(uri = "walkaround_with_additional_iframes.mp4", type = Video.Type.ASSETS)
         val externalStorageVideo = Video(uri = "Download/walkaround.mp4", type = Video.Type.EXTERNAL_STORAGE)
-        val internalStorageVideo = Video(uri = "walkaround.mp4", type = Video.Type.INTERNAL_STORAGE)
+        val internalStorageVideo = Video(uri = "cache/walkaround.mp4", type = Video.Type.INTERNAL_STORAGE)
         val fileVideo = Video(uri = "walkaround.mp4".parseAssetFile(), type = Video.Type.FILE)
         val hlsVideo = Video(uri = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8", type = Video.Type.HLS)
         val youtubeHlsVideo = Video(
@@ -118,6 +118,7 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
+                autoPlay = true
                 media = mutableListOf<MediaData>().apply {
                     add(youtubeVideo)
                     add(youtube360Video)
@@ -162,8 +163,8 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
                 isTranslatable = true
                 isZoomable = true
                 showVideoControls = true
+                autoPlay = true
                 media = listOf(youtubeVideo, youtube360Video, youtubeHlsVideo)
-                autoPlay = false
             }.startActivity()
         }
     }

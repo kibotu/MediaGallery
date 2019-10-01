@@ -13,15 +13,15 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.daimajia.numberprogressbar.NumberProgressBar
 import kotlinx.android.synthetic.main.media_gallery_image_presenter.view.*
+import me.jessyan.progressmanager.ProgressListener
+import me.jessyan.progressmanager.ProgressManager
+import me.jessyan.progressmanager.body.ProgressInfo
 import net.kibotu.android.recyclerviewpresenter.Adapter
 import net.kibotu.android.recyclerviewpresenter.Presenter
 import net.kibotu.android.recyclerviewpresenter.PresenterModel
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.internal.log
-import net.kibotu.mediagallery.internal.progress.ProgressInfo
-import net.kibotu.mediagallery.internal.progress.ProgressListener
-import net.kibotu.mediagallery.internal.progress.ProgressManager
 import net.kibotu.mediagallery.internal.requestOptions
 
 

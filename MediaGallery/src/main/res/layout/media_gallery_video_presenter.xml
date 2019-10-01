@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/backgroundImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -16,8 +16,8 @@
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:auto_show="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,6 +37,7 @@
         android:id="@+id/playPause"
         android:layout_width="63dp"
         android:layout_height="63dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/player_view"
         app:layout_constraintEnd_toEndOf="@id/player_view"
         app:layout_constraintStart_toStartOf="@id/player_view"
@@ -48,6 +49,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:adjustViewBounds="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/playPause"
         app:layout_constraintEnd_toEndOf="@id/playPause"
         app:layout_constraintStart_toStartOf="@id/playPause"

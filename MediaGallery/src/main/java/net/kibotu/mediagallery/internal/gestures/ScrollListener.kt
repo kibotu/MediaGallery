@@ -8,12 +8,12 @@ internal open class ScrollListener(val width: () -> Int, val height: () -> Int, 
     /**
      * Min Swipe X-Distance
      */
-    var thresholdX  = 3f
+    var thresholdX = 3f
 
     /**
      * Min Swipe Y-Distance
      */
-    var thresholdY  = 3f
+    var thresholdY = 3f
 
     /**
      * Starting X-Position
