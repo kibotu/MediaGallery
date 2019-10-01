@@ -8,26 +8,26 @@ Simple full screen media gallery
 Features:
 
 - [x] list of imageMedia objects
-- [] list of video media objects
+- [ ] list of video media objects
 - [x] asset uris
 - [x] hls uris
 - [x] file uri
 - [x] youtube
-- [] 360
-- [] youtube 360
+- [ ] 360
+- [ ] youtube 360
 - [x] images
 - [x] streaming urls
-- [] click listener
+- [ ] click listener
 - [x] zoomable
 - [x] translatable
 - [x] player controls
 - [x] blurry
 - [x] crossfade background
 - [x] quit button
-- [] swipe down to quit
+- [ ] swipe down to quit
 - [x] preload
-- [] preload progressbar
-- [] viewpager indicators
+- [ ] preload progressbar
+- [ ] viewpager indicators
 - [x] resume seek position
 
 ### How to use
