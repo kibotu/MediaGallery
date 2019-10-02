@@ -8,7 +8,7 @@ Simple full screen media gallery
 Features:
 
 - [x] list of imageMedia objects
-- [ ] list of video media objects
+- [x] list of video media objects
 - [x] asset uris
 - [x] hls uris
 - [x] file uri
