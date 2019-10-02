@@ -122,8 +122,8 @@ dependencies {
 
     implementation libs.kotlinJdk8
     implementation libs.supportMultidex
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.appcompat:appcompat-resources:1.1.0'
+    implementation libs.supportAppCompat
+    implementation libs.appCompatResources
     implementation libs.constraintLayout2
     implementation libs.androidKtxCore
 
@@ -141,9 +141,12 @@ dependencies {
     implementation libs.rx2Android
     implementation libs.exoplayer
     implementation libs.md360Player
-    implementation "com.airbnb.android:lottie:3.0.7"
+    implementation libs.lottie
 
     implementation libs.progressManager
+
+    implementation libs.indefinitePagerIndicator
+
 }
 
 def escape(Object value) {

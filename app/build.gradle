@@ -130,11 +130,11 @@ dependencies {
 
     implementation libs.kotlinJdk8
     implementation libs.supportMultidex
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.appcompat:appcompat-resources:1.1.0'
+    implementation libs.supportAppCompat
+    implementation libs.appCompatResources
     implementation libs.supportDesign
     implementation libs.constraintLayout2
-    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+    implementation libs.supportVectorDrawable
     implementation libs.androidKtxCore
     implementation libs.exozetCore
     implementation libs.logger
@@ -151,6 +151,6 @@ dependencies {
     implementation libs.rx2Android
     implementation libs.rx2Kotlin
 
-    debugImplementation 'com.facebook.flipper:flipper:0.25.0'
-    debugImplementation 'com.facebook.soloader:soloader:0.8.0'
+    debugImplementation libs.flipper
+    debugImplementation libs.soloader
 }
