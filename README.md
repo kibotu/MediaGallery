@@ -27,7 +27,7 @@ Features:
 - [ ] swipe down to quit
 - [x] preload
 - [ ] preload progressbar
-- [ ] viewpager indicators
+- [x] viewpager indicators
 - [x] resume seek position
 - [x] scroll to position
 - [ ] return scroll position
@@ -46,6 +46,7 @@ MediaGalleryActivity.Builder.with(this) {
     scrollPosition = 0
     smoothScroll = true
     preload = media.size
+    showPageIndicator = true
     media = mutableListOf<MediaData>().apply {
         add(youtubeVideo)
         add(youtube360Video)
@@ -57,6 +58,15 @@ MediaGalleryActivity.Builder.with(this) {
         add(fileVideo)
     }
 }.startActivity()
+```
+
+### Style
+
+#### Page Indicator
+
+```xml
+    <color name="default_selected_dot_color">@color/colorPrimary</color>
+    <color name="default_dot_color">@color/colorPrimaryDark</color>
 ```
 
 ### How to install

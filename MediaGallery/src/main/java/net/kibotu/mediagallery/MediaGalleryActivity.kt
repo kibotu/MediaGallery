@@ -74,6 +74,9 @@ class MediaGalleryActivity : AppCompatActivity() {
             )
         )
 
+        if (params.showPageIndicator)
+            indicator.attachToViewPager(pager)
+
         pager.setPageTransformer(ZoomOutSlideTransformer())
         pager.adapter = adapter
 
@@ -167,7 +170,8 @@ class MediaGalleryActivity : AppCompatActivity() {
             var showVideoControlsTimeOut: Int = 1750,
             var keepOnScreen: Boolean = true,
             var scrollPosition: Int = 0,
-            var smoothScroll: Boolean = false
+            var smoothScroll: Boolean = false,
+            var showPageIndicator: Boolean = true
         ) : Parcelable
 
         fun startActivity() = context.get()!!.startActivity(with(Intent(context.get(), MediaGalleryActivity::class.java)) { putExtra(Options::class.java.canonicalName, options) })
