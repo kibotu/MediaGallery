@@ -10,7 +10,6 @@
 
         <activity
             android:name=".MediaGalleryActivity"
-            android:configChanges="screenSize|orientation"
             android:exported="false"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" />
