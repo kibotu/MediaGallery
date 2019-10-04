@@ -81,6 +81,15 @@ dependencies {
     implementation 'com.github.kibotu:MediaGallery:-SNAPSHOT'
 }
 ``` 
+
+### Notes
+
+Follow me on Twitter: [@wolkenschauer](https://twitter.com/wolkenschauer)
+
+Let me know what you think: [jan.rabe@kibotu.net](mailto:jan.rabe@kibotu.net)
+
+Contributions welcome!
+
 ### License
 
 <pre>
