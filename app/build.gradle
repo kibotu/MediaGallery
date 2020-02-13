@@ -132,7 +132,7 @@ dependencies {
     implementation libs.supportMultidex
     implementation libs.supportAppCompat
     implementation libs.appCompatResources
-    implementation libs.supportDesign
+    implementation libs.material
     implementation libs.constraintLayout2
     implementation libs.supportVectorDrawable
     implementation libs.androidKtxCore

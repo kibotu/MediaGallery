@@ -23,6 +23,7 @@ import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.requestOptions
+import net.kibotu.resourceextension.resBoolean
 
 
 internal class ImagePresenter(
@@ -44,7 +45,8 @@ internal class ImagePresenter(
 
             val uri = item.model.uri.toString()
 
-            ProgressManager.getInstance().addResponseListener(uri, GlideProgressListener(uri, number_progress_bar))
+            if (R.bool.enable_glide_progress_listener.resBoolean)
+                ProgressManager.getInstance().addResponseListener(uri, GlideProgressListener(uri, number_progress_bar))
 
             number_progress_bar.isVisible = true
 

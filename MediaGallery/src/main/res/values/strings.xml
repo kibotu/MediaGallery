@@ -1,3 +1,3 @@
 <resources>
-    <string name="app_name">MediaGallery</string>
+    <bool name="enable_glide_progress_listener">true</bool>
 </resources>

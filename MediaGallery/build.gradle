@@ -114,9 +114,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.google.android.material:material:1.1.0-alpha10"
 
     implementation libs.recyclerViewPresenter4
+    implementation libs.resourceExtensions
     implementation libs.zoomage
     implementation libs.numberprogressbar
 
@@ -124,6 +124,7 @@ dependencies {
     implementation libs.supportMultidex
     implementation libs.supportAppCompat
     implementation libs.appCompatResources
+    implementation libs.material
     implementation libs.constraintLayout2
     implementation libs.androidKtxCore
 
