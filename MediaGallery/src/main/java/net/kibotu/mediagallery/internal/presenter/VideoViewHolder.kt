@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
 import androidx.core.net.toUri
+import com.commit451.youtubeextractor.Stream
 import com.commit451.youtubeextractor.YouTubeExtractor
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
@@ -26,6 +27,7 @@ import net.kibotu.mediagallery.internal.parseAssetFile
 import net.kibotu.mediagallery.internal.parseExternalStorageFile
 import net.kibotu.mediagallery.internal.parseInternalStorageFile
 import java.util.*
+import kotlin.math.abs
 
 
 internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHolder(parent, layout) {
@@ -104,18 +106,35 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
                 disposable = extractor.extract(uri.toString())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map {
-                        it.videoStreams.firstOrNull { it.format == "MPEG4" }?.url?.toUri()
-                    }
                     .subscribe({
+
+                        val videoStreams = it.streams.filterIsInstance<Stream.VideoStream>()
+
+                        videoStreams.forEach { logv { "$it" } }
+
+                        val mp4s = videoStreams.filter { it.format == "MPEG4" }
+                        val videos = if (mp4s.any { !it.isVideoOnly }) mp4s.filter { !it.isVideoOnly } else mp4s
+
+                        val playerHeight = playerView.height
+
+                        val resolutions = videos.map { it.resolution.replace("p", "").toInt() }.distinct()
+                        val closest = resolutions.closestValue(playerHeight)
+
+                        var closestVideo = videos.firstOrNull { it.resolution == "${closest}p" }
+
+                        logv { "playerHeight=${playerHeight} closest=$closest closestVideo=$closestVideo" }
+
+                        closestVideo = closestVideo ?: mp4s.firstOrNull()
+
+                        val uri = closestVideo?.url?.toUri() ?: return@subscribe
 
                         logv { "play $it" }
 
                         // add to cache
-                        uris[uri] = it ?: return@subscribe
+                        uris[uri] = uri
 
 //                        val source = HlsMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
-                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(it)
+                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
                         player?.prepare(source)
 
                     }, { logv { "$it" } })
@@ -180,5 +199,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     companion object {
         val uris = WeakHashMap<Uri, Uri>()
+
+        private fun List<Int>.closestValue(value: Int) = minBy { abs(value.minus(it)) }
     }
 }
