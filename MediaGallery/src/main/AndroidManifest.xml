@@ -10,9 +10,10 @@
 
         <activity
             android:name=".MediaGalleryActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:exported="false"
-            android:configChanges="orientation"
             android:launchMode="singleInstance"
+            android:screenOrientation="fullSensor"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" />
 
     </application>

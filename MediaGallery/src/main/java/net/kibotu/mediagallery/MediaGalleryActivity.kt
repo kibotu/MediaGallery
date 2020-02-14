@@ -2,6 +2,7 @@ package net.kibotu.mediagallery
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -74,7 +75,7 @@ class MediaGalleryActivity : AppCompatActivity() {
             )
         )
 
-        if (params.showPageIndicator)
+        if (params.showPageIndicator && params.media.size > 1)
             indicator.attachToViewPager(pager)
 
         pager.setPageTransformer(ZoomOutSlideTransformer())
@@ -194,5 +195,11 @@ class MediaGalleryActivity : AppCompatActivity() {
         if (hasFocus) hideSystemUI()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        log { "onConfigurationChanged $newConfig orientation=${newConfig.orientation}" }
+    }
+
     // endregion
 }
+
