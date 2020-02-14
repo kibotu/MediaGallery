@@ -1,5 +1,5 @@
 [![Donation](https://img.shields.io/badge/buy%20me%20a%20coffee-brightgreen.svg)](https://www.paypal.me/janrabe/5) [![About Jan Rabe](https://img.shields.io/badge/about-me-green.svg)](https://about.me/janrabe)
-# MediaGallery [![](https://jitpack.io/v/kibotu/MediaGallery.svg)](https://jitpack.io/#kibotu/MediaGallery) [![](https://jitpack.io/v/kibotu/MediaGallery/month.svg)](https://jitpack.io/#kibotu/MediaGallery) [![Hits-of-Code](https://hitsofcode.com/github/kibotu/MediaGallery)](https://hitsofcode.com/view/github/kibotu/MediaGallery) [![Javadoc](https://img.shields.io/badge/javadoc-SNAPSHOT-green.svg)](https://jitpack.io/com/github/kibotu/MediaGallery/master-SNAPSHOT/javadoc/index.html) [![Build Status](https://travis-ci.org/kibotu/MediaGallery.svg)](https://travis-ci.org/kibotu/MediaGallery)  [![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=16) [![Gradle Version](https://img.shields.io/badge/gradle-5.6.1-green.svg)](https://docs.gradle.org/current/release-notes)  [![Kotlin](https://img.shields.io/badge/kotlin-1.3.50-green.svg)](https://kotlinlang.org/) [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/kibotu/MediaGallery/master/LICENSE) [![androidx](https://img.shields.io/badge/androidx-brightgreen.svg)](https://developer.android.com/topic/libraries/support-library/refactor)
+# MediaGallery [![](https://jitpack.io/v/kibotu/MediaGallery.svg)](https://jitpack.io/#kibotu/MediaGallery) [![](https://jitpack.io/v/kibotu/MediaGallery/month.svg)](https://jitpack.io/#kibotu/MediaGallery) [![Hits-of-Code](https://hitsofcode.com/github/kibotu/MediaGallery)](https://hitsofcode.com/view/github/kibotu/MediaGallery) [![Javadoc](https://img.shields.io/badge/javadoc-SNAPSHOT-green.svg)](https://jitpack.io/com/github/kibotu/MediaGallery/master-SNAPSHOT/javadoc/index.html) [![Build Status](https://travis-ci.org/kibotu/MediaGallery.svg)](https://travis-ci.org/kibotu/MediaGallery)  [![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=16) [![Gradle Version](https://img.shields.io/badge/gradle-6.1.1-green.svg)](https://docs.gradle.org/current/release-notes)  [![Kotlin](https://img.shields.io/badge/kotlin-1.3.61-green.svg)](https://kotlinlang.org/) [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/kibotu/MediaGallery/master/LICENSE) [![androidx](https://img.shields.io/badge/androidx-brightgreen.svg)](https://developer.android.com/topic/libraries/support-library/refactor)
 
 Simple full screen media gallery
 
@@ -30,7 +30,9 @@ Features:
 - [x] viewpager indicators
 - [x] resume seek position
 - [x] scroll to position
-- [ ] return scroll position
+- [x] return scroll position
+- [x] configuration change events (orientation|screenSize|screenLayout|keyboardHidden)
+- [x] no dot indicator if there is only one element
 
 ### How to use
 
