@@ -99,8 +99,8 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
             type == Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseAssetFile())
             type == Video.Type.EXTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseExternalStorageFile())
             type == Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
-            type == Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri)
-            type == Video.Type.YOUTUBE && uris.containsKey(uri) -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uris[uri])
+            type == Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri?: return)
+            type == Video.Type.YOUTUBE && uris.containsKey(uri) -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uris[uri]?:return)
             type == Video.Type.YOUTUBE -> {
 
                 disposable = extractor.extract(uri.toString())
@@ -142,11 +142,11 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
                 null
 
             }
-            /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+            /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri?:return)
         }
 
         player!!.repeatMode = Player.REPEAT_MODE_ALL
-        player!!.seekParameters = SeekParameters.CLOSEST_SYNC
+        player!!.setSeekParameters(SeekParameters.CLOSEST_SYNC)
         player!!.prepare(mediaSource ?: return)
 
     }

@@ -8,9 +8,8 @@ import com.exozet.android.core.base.CompositeDisposableHolder
 import com.exozet.android.core.extensions.fileExists
 import com.exozet.android.core.extensions.onClick
 import com.exozet.android.core.extensions.parseAssetFile
-import com.tbruyelle.rxpermissions2.RxPermissions
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
+import com.tbruyelle.rxpermissions3.RxPermissions
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kibotu.logger.LogcatLogger
 import net.kibotu.logger.Logger
@@ -24,21 +23,21 @@ import net.kibotu.resourceextension.screenHeightPixels
 import net.kibotu.resourceextension.screenWidthPixels
 
 
-class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         Logger.addLogger(LogcatLogger())
-        RxPermissions(this)
+        subscription.add(RxPermissions(this)
             .requestEachCombined(Manifest.permission.READ_EXTERNAL_STORAGE)
             .subscribe({
                 if (it.granted)
                     init()
             }, {
                 logw { "permission $it" }
-            }).addTo(subscription)
+            }))
     }
 
     private fun init() {
@@ -173,12 +172,17 @@ class MainActivity : AppCompatActivity(), CompositeDisposableHolder {
 
     // region CompositeDisposableHolder
 
-    override var subscription = CompositeDisposable()
+     var subscription = CompositeDisposable()
 
-    override fun disposeCompositeDisposable() {
+     private fun disposeCompositeDisposable() {
         if (!subscription.isDisposed)
             subscription.dispose()
     }
 
     // endregion
+
+    override fun onDestroy() {
+        disposeCompositeDisposable()
+        super.onDestroy()
+    }
 }
