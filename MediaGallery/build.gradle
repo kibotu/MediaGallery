@@ -38,7 +38,6 @@ android {
         buildConfigField "String", "CANONICAL_VERSION_NAME", escape(canonicalReleaseVersionName())
         buildConfigField "String", "COMMIT_HASH", escape(commitHash())
         buildConfigField "String", "BRANCH", escape(branchNameByGit())
-        buildConfigField "String", "BUILD_DATE", escape(new Date().getTime())
 
         // to avoid lib compile for release when app is compiled for debug: //http://stackoverflow.com/a/30134955/2736039
         defaultPublishConfig 'release'
@@ -139,6 +138,7 @@ dependencies {
     implementation libs.okhttp3LoggingInterceptor
 
     implementation libs.youtubeExtractor
+    implementation libs.rx2java
     implementation libs.rx2Android
     implementation libs.exoplayer
     implementation libs.md360Player

@@ -136,7 +136,9 @@ dependencies {
     implementation libs.constraintLayout2
     implementation libs.supportVectorDrawable
     implementation libs.androidKtxCore
-    implementation libs.exozetCore
+    implementation (libs.exozetCore) {
+        exclude group: 'io.realm'
+    }
     implementation libs.logger
     implementation libs.rxpermissions
 
@@ -148,8 +150,7 @@ dependencies {
     kapt libs.glideAnnotationsProcessor
 
     implementation libs.rx2java
-    implementation libs.rx2Android
-    implementation libs.rx2Kotlin
+    implementation libs.rx3java
 
     debugImplementation libs.flipper
     debugImplementation libs.soloader
