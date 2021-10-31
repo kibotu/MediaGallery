@@ -1,12 +1,11 @@
 package net.kibotu.mediagallery.internal.presenter
 
-import android.net.Uri
-import android.util.Log
-import android.view.ViewGroup
-import androidx.core.net.toUri
 //import com.commit451.youtubeextractor.Stream
 //import com.commit451.youtubeextractor.YouTubeExtractor
 //import com.google.android.exoplayer2.ExoPlayerFactory
+import android.net.Uri
+import android.util.Log
+import android.view.ViewGroup
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -16,9 +15,7 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import net.kibotu.android.recyclerviewpresenter.RecyclerViewHolder
 import net.kibotu.mediagallery.BuildConfig
 import net.kibotu.mediagallery.R
@@ -86,7 +83,9 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
     private fun setupExoPlayer() {
         logv { "setupExoPlayer" }
         if (player == null) {
-//            player = ExoPlayerFactory.newSimpleInstance(application, DefaultTrackSelector(AdaptiveTrackSelection.Factory()))
+            player = SimpleExoPlayer.Builder(playerView.context)
+                .setTrackSelector(DefaultTrackSelector(AdaptiveTrackSelection.Factory()))
+                .build()
         }
     }
 
@@ -98,9 +97,10 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         val mediaSource = when {
             type == Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseAssetFile())
             type == Video.Type.EXTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseExternalStorageFile())
-            type == Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
-            type == Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri?: return)
-            type == Video.Type.YOUTUBE && uris.containsKey(uri) -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uris[uri]?:return)
+            type == Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory)
+                .createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
+            type == Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri ?: return)
+            type == Video.Type.YOUTUBE && uris.containsKey(uri) -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uris[uri] ?: return)
 //            type == Video.Type.YOUTUBE -> {
 
 //                disposable = extractor.extract(uri.toString())
@@ -142,7 +142,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 //                null
 //
 //            }
-            /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri?:return)
+            /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri ?: return)
         }
 
         player?.repeatMode = Player.REPEAT_MODE_ALL
@@ -169,10 +169,10 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     private fun start() {
         logv { "start from currentProgress=$currentProgress" }
-        player!!.seekTo(currentProgress.coerceAtLeast(0))
+        player?.seekTo(currentProgress.coerceAtLeast(0))
         if (autoPlay) {
             isPlaying = true
-            player!!.playWhenReady = true
+            player?.playWhenReady = true
         }
     }
 
