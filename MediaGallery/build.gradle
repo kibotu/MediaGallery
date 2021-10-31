@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-parcelize'
+apply plugin: 'maven-publish'
 
 android {
 
@@ -24,9 +25,6 @@ android {
         buildConfigField "String", "CANONICAL_VERSION_NAME", escape(canonicalReleaseVersionName())
         buildConfigField "String", "COMMIT_HASH", escape(commitHash())
         buildConfigField "String", "BRANCH", escape(branchNameByGit())
-
-        // to avoid lib compile for release when app is compiled for debug: //http://stackoverflow.com/a/30134955/2736039
-        defaultPublishConfig 'release'
     }
 
     buildTypes {
@@ -104,6 +102,15 @@ kapt {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation libs.rx2java
+    implementation libs.rx2Android
+    implementation libs.exoplayer
+    implementation libs.md360Player
+    implementation libs.lottie
+
+    implementation libs.progressManager
+
+    implementation libs.indefinitePagerIndicator
 
     implementation libs.recyclerViewPresenter
     implementation libs.resourceExtensions
@@ -128,16 +135,6 @@ dependencies {
     implementation libs.okhttp4
     implementation libs.okhttp3LoggingInterceptor
 
-    implementation libs.rx2java
-    implementation libs.rx2Android
-    implementation libs.exoplayer
-    implementation libs.md360Player
-    implementation libs.lottie
-
-    implementation libs.progressManager
-
-    implementation libs.indefinitePagerIndicator
-
 }
 
 def escape(Object value) {
@@ -150,3 +147,17 @@ configurations.all {
     resolutionStrategy.force libs.okhttp4
     resolutionStrategy.force libs.okhttp3LoggingInterceptor
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = "com.github.kibotu"
+                artifactId = 'MediaGallery'
+                version = isCi ? simpleReleaseVersionName() : VERSION_NAME
+            }
+        }
+    }
+}
+
