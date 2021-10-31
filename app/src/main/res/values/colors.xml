@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
 
-    <color name="default_selected_dot_color">@color/white</color>
-    <color name="default_dot_color">@color/md_grey_600</color>
+    <color name="default_selected_dot_color">@android:color/white</color>
+    <color name="default_dot_color">#757575</color>
 
 </resources>

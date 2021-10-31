@@ -68,6 +68,6 @@ internal class BlurryImageView @JvmOverloads constructor(
 
         onBlurredBitmap.invoke(blurryBitmap!!)
 
-        log { "view=[$measuredWidth:$measuredHeight]: bitmap=[${bitmap.width}:${bitmap.height}] blurryBitmap=[${blurryBitmap?.width}:${blurryBitmap?.height}] canvas=${canvas.width}x${canvas.height} in ${System.currentTimeMillis() - startMs} ms sx=${(width / scaleFactor).toInt()} sy=${(width / scaleFactor).toInt()}" }
+        log( "view=[$measuredWidth:$measuredHeight]: bitmap=[${bitmap.width}:${bitmap.height}] blurryBitmap=[${blurryBitmap?.width}:${blurryBitmap?.height}] canvas=${canvas.width}x${canvas.height} in ${System.currentTimeMillis() - startMs} ms sx=${(width / scaleFactor).toInt()} sy=${(width / scaleFactor).toInt()}" )
     }
 }

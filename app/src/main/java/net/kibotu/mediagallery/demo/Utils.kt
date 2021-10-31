@@ -1,22 +1,26 @@
+@file:JvmName("FakeDataGenerator")
+
 package net.kibotu.mediagallery.demo
 
-import com.exozet.android.core.utils.MathExtensions
+import java.text.MessageFormat.format
+import kotlin.math.roundToInt
 import kotlin.random.Random
-
-val categories by lazy {
-    listOf("abstract", "animals", "business", "cats", "city", "food", "nightlife", "fashion", "people", "nature", "sports", "technics", "transport")
-}
 
 fun createRandomImageUrl(): String {
 
-    val maxWidth = 1080
-    val maxHeight = 1920
-
     val landscape = Random.nextBoolean()
-    val endpoint = Random.nextBoolean()
+    val endpoint = false // randomBoolean()
 
-    val width = MathExtensions.random(maxWidth, maxHeight)
-    val height = MathExtensions.random(maxWidth, maxHeight)
+    val width = randomRange(300, 400)
+    val height = randomRange(200, 300)
 
-    return "https://lorempixel.com/${categories.random()}/%d/%d".format(if (landscape) width else height, if (landscape) height else width)
+    return format(
+        if (endpoint)
+            "https://lorempixel.com/{0}/{1}/"
+        else
+            "https://picsum.photos/{0}/{1}/",
+        if (landscape) width else height, if (landscape) height else width
+    )
 }
+
+fun randomRange(start: Int = 0, end: Int): Int = (Random.nextFloat() * (end - start) + start).roundToInt()

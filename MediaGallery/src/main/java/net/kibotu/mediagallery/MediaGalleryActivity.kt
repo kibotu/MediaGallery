@@ -16,13 +16,13 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.main.activity_media_gallery.*
+import kotlinx.parcelize.Parcelize
 import net.kibotu.android.recyclerviewpresenter.PresenterAdapter
-import net.kibotu.android.recyclerviewpresenter.PresenterModel
+import net.kibotu.android.recyclerviewpresenter.PresenterViewModel
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.data.MediaData
 import net.kibotu.mediagallery.data.Video
+import net.kibotu.mediagallery.databinding.ActivityMediaGalleryBinding
 import net.kibotu.mediagallery.internal.hideSystemUI
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.onClick
@@ -40,10 +40,11 @@ class MediaGalleryActivity : AppCompatActivity() {
 
     private var isBlurrable: Boolean = true
 
+    private val binding by lazy { ActivityMediaGalleryBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_media_gallery)
+        setContentView(binding.root)
 
         val params: Builder.Options? = intent?.extras?.getParcelable(Builder.Options::class.java.canonicalName)
 
@@ -53,9 +54,13 @@ class MediaGalleryActivity : AppCompatActivity() {
             return
         }
 
-        log { "params=$params" }
+        log("params=$params" )
 
-        root.keepScreenOn = params.keepOnScreen
+        binding.init(params)
+    }
+
+    private fun ActivityMediaGalleryBinding.init(params: Builder.Options) {
+        binding.root.keepScreenOn = params.keepOnScreen
 
         isBlurrable = params.isBlurrable
 
@@ -64,7 +69,7 @@ class MediaGalleryActivity : AppCompatActivity() {
         val imagePresenter = ImagePresenter(
             isZoomable = params.isZoomable,
             isTranslatable = params.isTranslatable,
-            onResourceReady = this::onUpdateBackground
+            onResourceReady = { onUpdateBackground(it ?: return@ImagePresenter) }
         )
         adapter.registerPresenter(imagePresenter)
         adapter.registerPresenter(
@@ -81,15 +86,16 @@ class MediaGalleryActivity : AppCompatActivity() {
         pager.setPageTransformer(ZoomOutSlideTransformer())
         pager.adapter = adapter
 
-        val items = (params.media).map {
-            PresenterModel(
+        val items: MutableList<PresenterViewModel<*>> = (params.media).map {
+            PresenterViewModel(
                 it, when (it) {
                     is Video -> R.layout.media_gallery_video_presenter
                     is Image -> R.layout.media_gallery_image_presenter
                     else -> R.layout.media_gallery_image_presenter
                 }
             )
-        }
+        }.toMutableList()
+
         preload(params.preload, params.media.filterIsInstance(Image::class.java), requestOptions)
 
         adapter.submitList(items)
@@ -99,19 +105,19 @@ class MediaGalleryActivity : AppCompatActivity() {
         quit.onClick { finish() }
     }
 
-    private fun onUpdateBackground(bitmap: Bitmap?) {
+    private fun ActivityMediaGalleryBinding.onUpdateBackground(bitmap: Bitmap) {
         if (!isBlurrable) return
 
-        blurryBackground.crossfade(bitmap!!)
+        blurryBackground.crossfade(bitmap)
     }
 
     override fun onDestroy() {
         requests?.forEach { it.request?.clear() }
-        with(pager.adapter as PresenterAdapter) {
+        with(binding.pager.adapter as PresenterAdapter) {
             clear()
             unregisterPresenter()
         }
-        pager.adapter = null
+        binding.pager.adapter = null
         super.onDestroy()
     }
 
@@ -136,12 +142,12 @@ class MediaGalleryActivity : AppCompatActivity() {
     private class GlidePreloadListener(val counter: AtomicInteger, val total: Int) : RequestListener<Drawable> {
 
         override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-            log { "onLoadFailed count=${counter.incrementAndGet()} size=${total} $model" }
+            log("onLoadFailed count=${counter.incrementAndGet()} size=${total} $model" )
             return false
         }
 
         override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-            log { "onResourceReady count=${counter.incrementAndGet()} size=${total} $model" }
+            log( "onResourceReady count=${counter.incrementAndGet()} size=${total} $model" )
             return false
         }
     }
@@ -197,7 +203,7 @@ class MediaGalleryActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        log { "onConfigurationChanged $newConfig orientation=${newConfig.orientation}" }
+        log( "onConfigurationChanged $newConfig orientation=${newConfig.orientation}" )
     }
 
     // endregion

@@ -4,44 +4,43 @@ import android.Manifest
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.exozet.android.core.base.CompositeDisposableHolder
-import com.exozet.android.core.extensions.fileExists
-import com.exozet.android.core.extensions.onClick
-import com.exozet.android.core.extensions.parseAssetFile
-import com.tbruyelle.rxpermissions3.RxPermissions
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.core.net.toFile
+import com.tbruyelle.rxpermissions2.RxPermissions
+import io.reactivex.disposables.CompositeDisposable
 import net.kibotu.logger.LogcatLogger
 import net.kibotu.logger.Logger
-import net.kibotu.logger.Logger.logv
-import net.kibotu.logger.Logger.logw
+import net.kibotu.logger.Logger.v
+import net.kibotu.logger.Logger.w
 import net.kibotu.mediagallery.MediaGalleryActivity
 import net.kibotu.mediagallery.data.Image
 import net.kibotu.mediagallery.data.MediaData
 import net.kibotu.mediagallery.data.Video
-import net.kibotu.resourceextension.screenHeightPixels
-import net.kibotu.resourceextension.screenWidthPixels
+import net.kibotu.mediagallery.demo.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
 
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         Logger.addLogger(LogcatLogger())
-        subscription.add(RxPermissions(this)
-            .requestEachCombined(Manifest.permission.READ_EXTERNAL_STORAGE)
-            .subscribe({
-                if (it.granted)
-                    init()
-            }, {
-                logw { "permission $it" }
-            }))
+        subscription.add(
+            RxPermissions(this)
+                .requestEachCombined(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe({
+                    if (it.granted)
+                        binding.init()
+                }, {
+                    w("permission $it")
+                })
+        )
     }
 
-    private fun init() {
-        logv { "window=${screenWidthPixels}x$screenHeightPixels " }
+    private fun ActivityMainBinding.init() {
+//        v( "window=${screenWidthPixels}x$screenHeightPixels " )
 
         // [x] list of imageMedia objects
         // [] list of video media objects
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         val youtubeVideo = Video(uri = youtubeVideoId, type = Video.Type.YOUTUBE)
         val youtube360Video = Video(uri = youtube360VideoId, enable360 = true, type = Video.Type.YOUTUBE)
         val assetVideo = Video(uri = "walkaround_with_additional_iframes.mp4", type = Video.Type.ASSETS)
-        val externalStorageVideo = Video(uri = "Download/walkaround.mp4", type = Video.Type.EXTERNAL_STORAGE)
+        val externalStorageVideo = Video(uri = "file://Download/walkaround.mp4", type = Video.Type.EXTERNAL_STORAGE)
         val internalStorageVideo = Video(uri = "cache/walkaround.mp4", type = Video.Type.INTERNAL_STORAGE)
         val fileVideo = Video(uri = "walkaround.mp4".parseAssetFile(), type = Video.Type.FILE)
         val hlsVideo = Video(uri = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8", type = Video.Type.HLS)
@@ -94,11 +93,11 @@ class MainActivity : AppCompatActivity() {
             type = Video.Type.FILE
         )
 
-        logv { "exists: ${externalStorageVideo.uri} ${externalStorageVideo.uri.fileExists}" }
+        v( "exists: ${externalStorageVideo.uri} ${externalStorageVideo.uri.toFile().exists()}" )
 
-        image_gallery.onClick {
-            var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
-            MediaGalleryActivity.Builder.with(this) {
+        imageGallery.setOnClickListener {
+            val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
+            MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
                 isBlurrable = true
                 isTranslatable = true
@@ -111,9 +110,8 @@ class MainActivity : AppCompatActivity() {
             }.startActivity()
         }
 
-        video_gallery.onClick {
-            var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
-            MediaGalleryActivity.Builder.with(this) {
+        videoGallery.setOnClickListener {
+            MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
                 isBlurrable = true
                 isTranslatable = true
@@ -133,10 +131,10 @@ class MainActivity : AppCompatActivity() {
             }.startActivity()
         }
 
-        mixed_gallery.onClick {
+        mixedGallery.setOnClickListener {
             var uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             uris = list
-            MediaGalleryActivity.Builder.with(this) {
+            MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
                 isBlurrable = true
                 isTranslatable = true
@@ -157,8 +155,8 @@ class MainActivity : AppCompatActivity() {
             }.startActivity()
         }
 
-        youtube_videos.onClick {
-            MediaGalleryActivity.Builder.with(this) {
+        youtubeVideos.setOnClickListener {
+            MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
                 isBlurrable = true
                 isTranslatable = true
@@ -172,9 +170,9 @@ class MainActivity : AppCompatActivity() {
 
     // region CompositeDisposableHolder
 
-     var subscription = CompositeDisposable()
+    var subscription = CompositeDisposable()
 
-     private fun disposeCompositeDisposable() {
+    private fun disposeCompositeDisposable() {
         if (!subscription.isDisposed)
             subscription.dispose()
     }
@@ -186,3 +184,5 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 }
+
+fun String.parseAssetFile(): Uri = Uri.parse("file:///android_asset/$this")

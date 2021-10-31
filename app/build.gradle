@@ -1,21 +1,8 @@
 import java.security.spec.InvalidKeySpecException
 
-ext {
-    versionName = VERSION_NAME
-    VERSION_CODE = 1
-    VSC = VSC_PATH
-    isCi = true
-}
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.getkeepsafe.dexcount'
-
-androidExtensions {
-    experimental = true
-}
 
 kapt {
     useBuildCache = true
@@ -76,19 +63,34 @@ android {
         }
     }
 
-    // region compile options
+
+
+    // region java compile options
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(11))
+        }
     }
 
     // endregion
 
-    // region compile options
+    // region kotlin compile options
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = "11"
+        freeCompilerArgs += [
+                // disable linting for opt-in annotations
+                "-Xopt-in=kotlin.RequiresOptIn",
+                // disable compose version check
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+        ]
     }
 
     // endregion
@@ -107,19 +109,18 @@ android {
 
     // endregion
 
-    // region dex options
-
-    dexOptions {
-        javaMaxHeapSize "4g"
-        maxProcessCount 8
-    }
-
-    // endregion
-
     // region adb options
 
     adbOptions {
         timeOutInMs 10 * 60 * 1000 // 10 minutes
+    }
+
+    // endregion
+
+    // region buildFeatures
+
+    buildFeatures {
+        viewBinding true
     }
 
     // endregion
@@ -128,17 +129,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.kotlinJdk8
-    implementation libs.supportMultidex
-    implementation libs.supportAppCompat
-    implementation libs.appCompatResources
-    implementation libs.material
-    implementation libs.constraintLayout2
-    implementation libs.supportVectorDrawable
-    implementation libs.androidKtxCore
-    implementation (libs.exozetCore) {
-        exclude group: 'io.realm'
-    }
     implementation libs.logger
     implementation libs.rxpermissions
 
@@ -149,9 +139,18 @@ dependencies {
     implementation libs.lifecycleCommonJava8
     kapt libs.glideAnnotationsProcessor
 
+    implementation libs.soloader
+    implementation libs.flipper
+    implementation libs.flipperNetworkPlugin
+
     implementation libs.rx2java
     implementation libs.rx3java
 
-    debugImplementation libs.flipper
-    debugImplementation libs.soloader
+    implementation libs.multidex
+    implementation libs.appCompat
+    implementation libs.appCompatResources
+    implementation libs.material
+    implementation libs.constraintlayout
+//    implementation libs.supportVectorDrawable
+    implementation libs.androidKtxCore
 }

@@ -1,36 +1,30 @@
+apply plugin: 'jacoco'
+
 buildscript {
 
-    apply from: "${project.rootDir}/Android-Dependencies/dependencies.gradle"
+    apply from: "${project.rootDir}/dependencies.gradle"
 
     repositories {
         google()
-        maven { url 'https://maven-central-eu.storage-download.googleapis.com/repos/central/data/' }
-        maven { url 'https://plugins.gradle.org/m2/' }
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
 
     }
     dependencies {
         classpath plugin.gradleBuildTools
         classpath plugin.kotlinGradle
-        classpath plugin.kotlinApt
-        classpath plugin.dexcountGradle
-
-        classpath pluginLibrary.gradleBintrayPlugin
-        classpath pluginLibrary.mavenGradle
+        classpath plugin.kotlinSerialization
     }
 }
 
 allprojects {
 
-    apply from: "${project.rootDir}/Android-Dependencies/utils.gradle"
+    apply from: "${project.rootDir}/utils.gradle"
 
     repositories {
         google()
-        maven { url 'https://maven-central-eu.storage-download.googleapis.com/repos/central/data/' }
-        maven { url 'https://plugins.gradle.org/m2/' }
+        mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://dl.bintray.com/exozetag/maven' }
-        jcenter()
-        maven { url "https://oss.jfrog.org/libs-snapshot" } // rxandroid
     }
 }
 

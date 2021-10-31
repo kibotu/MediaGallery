@@ -26,7 +26,7 @@ class GlideConfiguration : LibraryGlideModule() {
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         super.registerComponents(context, glide, registry)
-        log { "registerComponents" }
+        log("registerComponents")
         val client = ProgressManager.getInstance().with(createOkHttpClient()).build()
         registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
     }

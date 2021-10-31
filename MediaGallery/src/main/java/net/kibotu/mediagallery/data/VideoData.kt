@@ -1,8 +1,8 @@
 package net.kibotu.mediagallery.data
 
 import android.net.Uri
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 

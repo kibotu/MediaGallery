@@ -4,9 +4,9 @@ import android.net.Uri
 import android.util.Log
 import android.view.ViewGroup
 import androidx.core.net.toUri
-import com.commit451.youtubeextractor.Stream
-import com.commit451.youtubeextractor.YouTubeExtractor
-import com.google.android.exoplayer2.ExoPlayerFactory
+//import com.commit451.youtubeextractor.Stream
+//import com.commit451.youtubeextractor.YouTubeExtractor
+//import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -53,7 +53,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     private var disposable: Disposable? = null
 
-    private val extractor by lazy { YouTubeExtractor.Builder().build() }
+//    private val extractor by lazy { YouTubeExtractor.Builder().build() }
 
     init {
         logv { "init" }
@@ -86,7 +86,7 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
     private fun setupExoPlayer() {
         logv { "setupExoPlayer" }
         if (player == null) {
-            player = ExoPlayerFactory.newSimpleInstance(application, DefaultTrackSelector(AdaptiveTrackSelection.Factory()))
+//            player = ExoPlayerFactory.newSimpleInstance(application, DefaultTrackSelector(AdaptiveTrackSelection.Factory()))
         }
     }
 
@@ -101,53 +101,53 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
             type == Video.Type.INTERNAL_STORAGE -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri.toString().parseInternalStorageFile(itemView.context.applicationContext))
             type == Video.Type.HLS -> HlsMediaSource.Factory(defaultDataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri?: return)
             type == Video.Type.YOUTUBE && uris.containsKey(uri) -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uris[uri]?:return)
-            type == Video.Type.YOUTUBE -> {
+//            type == Video.Type.YOUTUBE -> {
 
-                disposable = extractor.extract(uri.toString())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-
-                        val videoStreams = it.streams.filterIsInstance<Stream.VideoStream>()
-
-                        videoStreams.forEach { logv { "$it" } }
-
-                        val mp4s = videoStreams.filter { it.format == "MPEG4" }
-                        val videos = if (mp4s.any { !it.isVideoOnly }) mp4s.filter { !it.isVideoOnly } else mp4s
-
-                        val playerHeight = playerView.height
-
-                        val resolutions = videos.map { it.resolution.replace("p", "").toInt() }.distinct()
-                        val closest = resolutions.closestValue(playerHeight)
-
-                        var closestVideo = videos.firstOrNull { it.resolution == "${closest}p" }
-
-                        logv { "playerHeight=${playerHeight} closest=$closest closestVideo=$closestVideo" }
-
-                        closestVideo = closestVideo ?: mp4s.firstOrNull()
-
-                        val uri = closestVideo?.url?.toUri() ?: return@subscribe
-
-                        logv { "play $it" }
-
-                        // add to cache
-                        uris[uri] = uri
-
-//                        val source = HlsMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
-                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
-                        player?.prepare(source)
-
-                    }, { logv { "$it" } })
-
-                null
-
-            }
+//                disposable = extractor.extract(uri.toString())
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe({
+//
+//                        val videoStreams = it.streams.filterIsInstance<Stream.VideoStream>()
+//
+//                        videoStreams.forEach { logv { "$it" } }
+//
+//                        val mp4s = videoStreams.filter { it.format == "MPEG4" }
+//                        val videos = if (mp4s.any { !it.isVideoOnly }) mp4s.filter { !it.isVideoOnly } else mp4s
+//
+//                        val playerHeight = playerView.height
+//
+//                        val resolutions = videos.map { it.resolution.replace("p", "").toInt() }.distinct()
+//                        val closest = resolutions.closestValue(playerHeight)
+//
+//                        var closestVideo = videos.firstOrNull { it.resolution == "${closest}p" }
+//
+//                        logv { "playerHeight=${playerHeight} closest=$closest closestVideo=$closestVideo" }
+//
+//                        closestVideo = closestVideo ?: mp4s.firstOrNull()
+//
+//                        val uri = closestVideo?.url?.toUri() ?: return@subscribe
+//
+//                        logv { "play $it" }
+//
+//                        // add to cache
+//                        uris[uri] = uri
+//
+////                        val source = HlsMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+//                        val source = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri)
+//                        player?.prepare(source)
+//
+//                    }, { logv { "$it" } })
+//
+//                null
+//
+//            }
             /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(uri?:return)
         }
 
-        player!!.repeatMode = Player.REPEAT_MODE_ALL
-        player!!.setSeekParameters(SeekParameters.CLOSEST_SYNC)
-        player!!.prepare(mediaSource ?: return)
+        player?.repeatMode = Player.REPEAT_MODE_ALL
+        player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
+        player?.prepare(mediaSource ?: return)
 
     }
 
@@ -200,6 +200,6 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
     companion object {
         val uris = WeakHashMap<Uri, Uri>()
 
-        private fun List<Int>.closestValue(value: Int) = minBy { abs(value.minus(it)) }
+        private fun List<Int>.closestValue(value: Int) = minByOrNull { abs(value.minus(it)) }
     }
 }

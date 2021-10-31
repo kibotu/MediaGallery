@@ -1,15 +1,13 @@
 package net.kibotu.mediagallery.internal.presenter
 
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.media_gallery_video_presenter.view.*
-import net.kibotu.android.recyclerviewpresenter.Adapter
 import net.kibotu.android.recyclerviewpresenter.Presenter
-import net.kibotu.android.recyclerviewpresenter.PresenterModel
+import net.kibotu.android.recyclerviewpresenter.PresenterViewModel
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Video
+import net.kibotu.mediagallery.databinding.MediaGalleryVideoPresenterBinding
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.onClick
 
@@ -18,18 +16,15 @@ class VideoPresenter(
     private val showVideoControlsTimeOut: Int,
     private val autoPlay: Boolean,
     private val showPlayPauseButton: Boolean = false
-) : Presenter<Video>() {
+) : Presenter<Video, MediaGalleryVideoPresenterBinding>(R.layout.media_gallery_video_presenter, MediaGalleryVideoPresenterBinding::bind) {
 
-    override val layout = R.layout.media_gallery_video_presenter
+    override fun bindViewHolder(viewBinding: MediaGalleryVideoPresenterBinding, viewHolder: RecyclerView.ViewHolder, item: PresenterViewModel<Video>, payloads: MutableList<Any>?): Unit =
+        with(viewBinding) {
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: PresenterModel<Video>, position: Int, payloads: MutableList<Any>?, adapter: Adapter) {
+            log("bindViewHolder ${viewHolder.bindingAdapterPosition} ${item.model}")
 
-        log { "bindViewHolder $position ${item.model}" }
-
-        with(viewHolder.itemView) {
-
-            player_view.useController = showVideoControls
-            player_view.controllerShowTimeoutMs = showVideoControlsTimeOut
+            playerView.useController = showVideoControls
+            playerView.controllerShowTimeoutMs = showVideoControlsTimeOut
 
             with(viewHolder as VideoViewHolder) {
                 autoPlay = this@VideoPresenter.autoPlay
@@ -40,7 +35,7 @@ class VideoPresenter(
                     item.model.progress = it
                 }
 
-                player_view.onClick {
+                playerView.onClick {
                     isPlaying = !isPlaying
                 }
 
@@ -48,9 +43,8 @@ class VideoPresenter(
                 playPauseButton(this)
             }
         }
-    }
 
-    private fun View.playPauseButton(vh: VideoViewHolder) {
+    private fun MediaGalleryVideoPresenterBinding.playPauseButton(vh: VideoViewHolder) {
 
         playPauseAnimation.isGone = !showPlayPauseButton
         playPause.isGone = !showPlayPauseButton

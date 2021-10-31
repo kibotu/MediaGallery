@@ -12,15 +12,14 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCross
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.daimajia.numberprogressbar.NumberProgressBar
-import kotlinx.android.synthetic.main.media_gallery_image_presenter.view.*
 import me.jessyan.progressmanager.ProgressListener
 import me.jessyan.progressmanager.ProgressManager
 import me.jessyan.progressmanager.body.ProgressInfo
-import net.kibotu.android.recyclerviewpresenter.Adapter
 import net.kibotu.android.recyclerviewpresenter.Presenter
-import net.kibotu.android.recyclerviewpresenter.PresenterModel
+import net.kibotu.android.recyclerviewpresenter.PresenterViewModel
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Image
+import net.kibotu.mediagallery.databinding.MediaGalleryImagePresenterBinding
 import net.kibotu.mediagallery.internal.log
 import net.kibotu.mediagallery.internal.requestOptions
 import net.kibotu.resourceextension.resBoolean
@@ -29,16 +28,14 @@ import net.kibotu.resourceextension.resBoolean
 internal class ImagePresenter(
     val isTranslatable: Boolean = true,
     val isZoomable: Boolean = true,
-    var onResourceReady: ((Bitmap?) -> Unit)? = null
-) : Presenter<Image>() {
+    var onResourceReady: ((Bitmap?) -> Unit)? = null,
+) : Presenter<Image, MediaGalleryImagePresenterBinding>(R.layout.media_gallery_image_presenter, MediaGalleryImagePresenterBinding::bind) {
 
-    override val layout = R.layout.media_gallery_image_presenter
+    override fun bindViewHolder(viewBinding: MediaGalleryImagePresenterBinding, viewHolder: RecyclerView.ViewHolder, item: PresenterViewModel<Image>, payloads: MutableList<Any>?): Unit =
+        with(viewBinding) {
 
-    override fun bindViewHolder(viewHolder: RecyclerView.ViewHolder, item: PresenterModel<Image>, position: Int, payloads: MutableList<Any>?, adapter: Adapter) {
+            log("bindViewHolder ${viewHolder.bindingAdapterPosition} ${item.model}")
 
-        log { "bindViewHolder $position ${item.model}" }
-
-        with(viewHolder.itemView) {
 
             image.isZoomable = isZoomable
             image.isTranslatable = isTranslatable
@@ -46,25 +43,25 @@ internal class ImagePresenter(
             val uri = item.model.uri.toString()
 
             if (R.bool.enable_glide_progress_listener.resBoolean)
-                ProgressManager.getInstance().addResponseListener(uri, GlideProgressListener(uri, number_progress_bar))
+                ProgressManager.getInstance().addResponseListener(uri, GlideProgressListener(uri, numberProgressBar))
 
-            number_progress_bar.isVisible = true
+            numberProgressBar.isVisible = true
 
             image.setImageBitmap(null)
 
-            Glide.with(context.applicationContext)
+            Glide.with(viewHolder.itemView.context)
                 .asBitmap()
                 .load(item.model.uri)
                 .apply(requestOptions.priority(Priority.IMMEDIATE))
                 .transition(withCrossFade())
                 .listener(object : RequestListener<Bitmap?> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap?>?, isFirstResource: Boolean): Boolean {
-                        number_progress_bar.isGone = true
+                        numberProgressBar.isGone = true
                         return false
                     }
 
                     override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap?>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                        number_progress_bar.isGone = true
+                        numberProgressBar.isGone = true
                         onResourceReady?.invoke(resource)
                         return false
                     }
@@ -73,7 +70,6 @@ internal class ImagePresenter(
                 .waitForLayout()
                 .clearOnDetach()
         }
-    }
 }
 
 internal class GlideProgressListener(
@@ -85,13 +81,13 @@ internal class GlideProgressListener(
 
         numberProgressBar.isGone = progressInfo?.isFinish == true
 
-        log { "onProgress ${progressInfo?.percent} $progressInfo $url" }
+        log("onProgress ${progressInfo?.percent} $progressInfo $url")
 
         numberProgressBar.progress = progressInfo?.percent ?: 0
     }
 
     override fun onError(id: Long, e: Exception?) {
-        log { "onError id=$id ${e?.message}" }
+        log("onError id=$id ${e?.message}")
         numberProgressBar.isGone = true
     }
 }

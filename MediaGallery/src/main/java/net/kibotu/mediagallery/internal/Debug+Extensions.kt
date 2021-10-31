@@ -11,12 +11,7 @@ import net.kibotu.mediagallery.BuildConfig
 
 internal val debug = BuildConfig.DEBUG
 
-internal fun Any.log(block: () -> String?) {
-    if (debug)
-        Log.d(this::class.java.simpleName, "${block()}")
-}
-
-internal fun Exception.log(block: () -> String?) {
-    if (debug)
-        Log.d(this::class.java.simpleName, "${block()}")
+internal fun Any.log(message: String?) {
+    if (!debug || message?.isNotEmpty() != true) return
+    Log.d(this::class.java.simpleName, message)
 }

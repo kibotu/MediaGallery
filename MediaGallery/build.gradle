@@ -1,22 +1,8 @@
-ext {
-    versionName = VERSION_NAME
-    VERSION_CODE = 1
-    VSC = VSC_PATH
-    isCi = true
-}
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.getkeepsafe.dexcount'
-
-androidExtensions {
-    experimental = true
-}
-
-kapt {
-    useBuildCache = true
-}
+apply plugin: 'kotlinx-serialization'
+apply plugin: 'kotlin-parcelize'
 
 android {
 
@@ -41,7 +27,6 @@ android {
 
         // to avoid lib compile for release when app is compiled for debug: //http://stackoverflow.com/a/30134955/2736039
         defaultPublishConfig 'release'
-        publishNonDefault true
     }
 
     buildTypes {
@@ -51,19 +36,32 @@ android {
         }
     }
 
-    // region compile options
+    // region java compile options
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(11))
+        }
     }
 
     // endregion
 
-    // region compile options
+    // region kotlin compile options
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = "11"
+        freeCompilerArgs += [
+                // disable linting for opt-in annotations
+                "-Xopt-in=kotlin.RequiresOptIn",
+                // disable compose version check
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+        ]
     }
 
     // endregion
@@ -82,15 +80,6 @@ android {
 
     // endregion
 
-    // region dex options
-
-    dexOptions {
-        javaMaxHeapSize "4g"
-        maxProcessCount 8
-    }
-
-    // endregion
-
     // region adb options
 
     adbOptions {
@@ -99,32 +88,34 @@ android {
 
     // endregion
 
-    // region exclude duplicated meta inf files
+    // region buildFeatures
 
-    packagingOptions {
-        exclude 'META-INF/app_debug.kotlin_module'
-        exclude 'META-INF/library-core_release.kotlin_module'
+    buildFeatures {
+        viewBinding true
     }
 
     // endregion
 }
 
+kapt {
+    useBuildCache = true
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 
-    implementation libs.recyclerViewPresenter4
+    implementation libs.recyclerViewPresenter
     implementation libs.resourceExtensions
+    implementation libs.applicationProvider
     implementation libs.zoomage
     implementation libs.numberprogressbar
 
-    implementation libs.kotlinJdk8
-    implementation libs.supportMultidex
-    implementation libs.supportAppCompat
+    implementation libs.multidex
+    implementation libs.appCompat
     implementation libs.appCompatResources
     implementation libs.material
-    implementation libs.constraintLayout2
+    implementation libs.constraintlayout
     implementation libs.androidKtxCore
 
     implementation libs.viewpager2
@@ -137,7 +128,6 @@ dependencies {
     implementation libs.okhttp4
     implementation libs.okhttp3LoggingInterceptor
 
-    implementation libs.youtubeExtractor
     implementation libs.rx2java
     implementation libs.rx2Android
     implementation libs.exoplayer
@@ -160,6 +150,3 @@ configurations.all {
     resolutionStrategy.force libs.okhttp4
     resolutionStrategy.force libs.okhttp3LoggingInterceptor
 }
-
-apply from: "${project.rootDir}/Android-Dependencies/javadoc.gradle"
-apply from: "${project.rootDir}/Android-Dependencies/bintray.gradle"
