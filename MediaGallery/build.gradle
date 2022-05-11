@@ -102,6 +102,7 @@ kapt {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation libs.youtubeExtractor
     implementation libs.exoplayerHls
     implementation libs.exoplayerUi
     implementation libs.exoplayerCore
@@ -126,7 +127,6 @@ dependencies {
 
     implementation libs.glide
     implementation libs.glideOkHttp3
-    implementation libs.lifecycleCommonJava8
     kapt libs.glideAnnotationsProcessor
 
     implementation libs.okhttp4

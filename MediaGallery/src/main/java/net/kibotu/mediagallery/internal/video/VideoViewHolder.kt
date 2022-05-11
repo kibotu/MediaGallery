@@ -1,7 +1,13 @@
 package net.kibotu.mediagallery.internal.video
 
+import android.content.Context
 import android.net.Uri
+import android.util.SparseArray
 import android.view.ViewGroup
+import androidx.core.net.toUri
+import at.huber.youtubeExtractor.VideoMeta
+import at.huber.youtubeExtractor.YouTubeExtractor
+import at.huber.youtubeExtractor.YtFile
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -19,6 +25,7 @@ import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Video
 import net.kibotu.mediagallery.internal.extensions.log
 import net.kibotu.mediagallery.internal.extensions.parseAssetFile
+
 
 /**
  * Created by [Jan Rabe](https://kibotu.net).
@@ -66,20 +73,49 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
     }
 
     private fun prepare() {
-        val defaultDataSourceFactory = DefaultDataSource.Factory(application)
-
-        val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
-
-        val mediaSource = when {
-            type == Video.Type.ASSETS -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(uri.toString().parseAssetFile()))
-            type == Video.Type.HLS -> HlsMediaSource.Factory(dataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(MediaItem.fromUri(uri ?: return))
-            /* Video.Type.FILE */ else -> ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(uri ?: return))
+        val uri = uri ?: return
+        when (type) {
+            Video.Type.ASSETS -> onVideo(uri.toString().parseAssetFile())
+            Video.Type.HLS -> onHlsVideo(uri)
+            Video.Type.YOUTUBE -> onYoutubeVideo(uri)
+            else -> onVideo(uri)
         }
+    }
 
+    private fun onHlsVideo(uri: Uri) {
+        log("onHlsVideo $uri")
+        val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
+        val mediaSource = HlsMediaSource.Factory(dataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(MediaItem.fromUri(uri ?: return))
         player?.repeatMode = Player.REPEAT_MODE_ALL
         player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
         player?.setMediaSource(mediaSource)
         player?.prepare()
+    }
+
+    private fun onVideo(uri: Uri) {
+        log("onVideo $uri")
+        val defaultDataSourceFactory = DefaultDataSource.Factory(application)
+        val mediaSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(uri))
+        player?.repeatMode = Player.REPEAT_MODE_ALL
+        player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
+    }
+
+    private class Extractor(context: Context, val onComplete: (ytFiles: SparseArray<YtFile>, vMeta: VideoMeta?) -> Unit) : YouTubeExtractor(context) {
+
+        override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, vMeta: VideoMeta?) {
+            if (ytFiles != null) onComplete(ytFiles, vMeta)
+        }
+    }
+
+    private fun onYoutubeVideo(uri: Uri) {
+        log("onYoutubeVideo $uri")
+        Extractor(application) { ytFiles, vMeta ->
+            val itag = 22
+            val downloadUrl = ytFiles[itag].url
+            onHlsVideo(downloadUrl.toUri())
+        }.extract(uri.toString())
     }
 
     var type: Video.Type = Video.Type.FILE

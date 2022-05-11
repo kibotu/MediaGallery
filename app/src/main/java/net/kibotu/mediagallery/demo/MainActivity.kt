@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
         // [] viewpager indicators
         // [x] resume seek position
 
-        val youtubeVideoId = "bt3qyCqv-eU"
-        val youtube360VideoId = "fRcgZnLvwhE"
+        val youtubeVideoId = "oYC8KkNIkZk"
+        val youtube360VideoId = "XNTNS8hlWZ8"
 
         // server supports content-length header (required for progress)
         val list = listOf(
@@ -91,10 +91,6 @@ class MainActivity : AppCompatActivity() {
             type = Video.Type.FILE
         )
 
-        val testImage = Image(uri = "https://picsum.photos/356/259/")
-
-
-
         imageGallery.setOnClickListener {
             val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this@MainActivity) {
@@ -117,10 +113,10 @@ class MainActivity : AppCompatActivity() {
                 showVideoControls = true
                 autoPlay = true
                 media = buildList<Media> {
-                    // add(youtube360Video)
-                    // add(youtubeHlsVideo)
                     add(assetVideo)
                     add(hlsVideo)
+                    add(youtube360Video)
+                    add(youtubeHlsVideo)
                     add(hls2Video)
                     add(fileVideo)
                 }
@@ -136,12 +132,12 @@ class MainActivity : AppCompatActivity() {
                 showVideoControls = true
                 autoPlay = true
                 media = buildList {
-//                    add(youtubeVideo)
-//                    add(youtube360Video)
-//                    add(youtubeHlsVideo)
                     add(hlsVideo)
                     add(assetVideo)
                     add(fileVideo)
+                    add(youtubeVideo)
+                    add(youtube360Video)
+                    add(youtubeHlsVideo)
                     addAll(uris.map { Image(uri = it.toString()) })
                 }
             }.startActivity()
