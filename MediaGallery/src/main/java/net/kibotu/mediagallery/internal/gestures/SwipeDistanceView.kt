@@ -6,12 +6,18 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 
-internal class SwipeDistanceView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
-) : View(context, attrs, defStyleAttr) {
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
+internal class SwipeDistanceView : View {
+
+    constructor(context: Context?) : super(context)
+
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
 
     protected val gestureDetector: GestureDetector
 

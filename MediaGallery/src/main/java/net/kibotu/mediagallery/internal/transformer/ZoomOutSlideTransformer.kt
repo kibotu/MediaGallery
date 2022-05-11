@@ -5,7 +5,9 @@ import net.kibotu.mediagallery.R
 import kotlin.math.abs
 import kotlin.math.max
 
-
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
 class ZoomOutSlideTransformer(private val minScale: Float = 0.85f, private val minAlpha: Float = 0.75f, private val enableAlpha: Boolean = false) : BaseTransformer() {
 
     override fun onTransform(view: View, position: Float) {

@@ -14,7 +14,7 @@
             android:exported="false"
             android:launchMode="singleInstance"
             android:screenOrientation="fullSensor"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" />
+            android:theme="@style/MediaGallery.Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" />
 
     </application>
 

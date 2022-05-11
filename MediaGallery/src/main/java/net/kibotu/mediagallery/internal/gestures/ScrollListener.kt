@@ -2,7 +2,9 @@ package net.kibotu.mediagallery.internal.gestures
 
 import android.view.GestureDetector
 import android.view.MotionEvent
-
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
 internal open class ScrollListener(val width: () -> Int, val height: () -> Int, val onScroll: (percentX: Float, percentY: Float) -> Unit) : GestureDetector.SimpleOnGestureListener() {
 
     /**

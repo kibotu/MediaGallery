@@ -56,10 +56,8 @@ android {
         freeCompilerArgs += [
                 // disable linting for opt-in annotations
                 "-Xopt-in=kotlin.RequiresOptIn",
-                // disable compose version check
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
         ]
+        useIR = true
     }
 
     // endregion
@@ -93,6 +91,8 @@ android {
     }
 
     // endregion
+
+    resourcePrefix 'media_gallery_'
 }
 
 kapt {
@@ -102,25 +102,22 @@ kapt {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation libs.rx2java
-    implementation libs.rx2Android
-    implementation libs.exoplayer
+    implementation libs.exoplayerHls
+    implementation libs.exoplayerUi
+    implementation libs.exoplayerCore
+
     implementation libs.md360Player
     implementation libs.lottie
+    implementation libs.photoView
 
     implementation libs.progressManager
 
     implementation libs.indefinitePagerIndicator
 
     implementation libs.recyclerViewPresenter
-    implementation libs.resourceExtensions
-    implementation libs.applicationProvider
-    implementation libs.zoomage
     implementation libs.numberprogressbar
 
-    implementation libs.multidex
     implementation libs.appCompat
-    implementation libs.appCompatResources
     implementation libs.material
     implementation libs.constraintlayout
     implementation libs.androidKtxCore
@@ -134,7 +131,6 @@ dependencies {
 
     implementation libs.okhttp4
     implementation libs.okhttp3LoggingInterceptor
-
 }
 
 def escape(Object value) {

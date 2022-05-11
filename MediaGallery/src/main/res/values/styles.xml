@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="MediaGallery.Theme.AppCompat.Light.NoActionBar.FullScreen.Translucent" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- is used to indicate whether there should be title on the window or not. -->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>

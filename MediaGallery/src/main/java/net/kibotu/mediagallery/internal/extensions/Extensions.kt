@@ -1,11 +1,13 @@
-package net.kibotu.mediagallery.internal
+package net.kibotu.mediagallery.internal.extensions
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.util.TypedValue
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewTreeObserver
@@ -16,6 +18,9 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import java.io.File
 
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
 
 internal fun View.waitForLayout(block: (() -> Unit)?) {
     viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -38,14 +43,6 @@ internal val screenWidthPixels: Int
 internal val screenHeightPixels: Int
     get() = Resources.getSystem().displayMetrics.heightPixels
 
-internal fun View.onClick(function: () -> Unit) {
-    setOnClickListener {
-        it.isHapticFeedbackEnabled = true
-        performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING)
-        function()
-    }
-}
-
 internal val requestOptions by lazy {
     RequestOptions
         .fitCenterTransform()
@@ -60,6 +57,7 @@ internal val requestOptions by lazy {
 /**
  * https://developer.android.com/training/system-ui/immersive
  */
+@Suppress("DEPRECATION")
 internal fun Activity.hideSystemUI() {
     window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 
@@ -73,6 +71,7 @@ internal fun Activity.hideSystemUI() {
             or View.SYSTEM_UI_FLAG_FULLSCREEN)
 }
 
+@Suppress("DEPRECATION")
 internal fun Activity.showSystemUI() {
     window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -81,11 +80,23 @@ internal fun Activity.showSystemUI() {
 
 internal fun String.parseAssetFile(): Uri = Uri.parse("file:///android_asset/$this")
 
-internal fun String.parseInternalStorageFile(context: Context): Uri = Uri.parse("${context.applicationContext!!.filesDir.absolutePath}/$this")
+internal fun Activity.finishWithResult(resultCode: Int, intent: Intent? = null) {
+    setResult(resultCode, intent)
+    finish()
+}
 
-internal fun String.parseExternalStorageFile(): Uri = Uri.parse("${Environment.getExternalStorageDirectory()}/$this")
 
-internal fun String.parseFile(): Uri = Uri.fromFile(File(this))
+/**
+ * Converts dp to pixel.
+ */
+val Float.dp: Float
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this,
+        Resources.getSystem().displayMetrics
+    )
 
-internal val Uri.fileExists: Boolean
-    get() = File(toString()).exists()
+/**
+ * Converts dp to pixel.
+ */
+val Int.dp: Int get() = toFloat().dp.toInt()

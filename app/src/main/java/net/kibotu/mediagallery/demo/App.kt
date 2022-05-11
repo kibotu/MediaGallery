@@ -1,10 +1,9 @@
 package net.kibotu.mediagallery.demo
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.multidex.MultiDexApplication
-import net.kibotu.logger.TAG
 import net.kibotu.mediagallery.demo.debug.BuildConfigRuntime
+import timber.log.Timber
 
 class App : MultiDexApplication() {
 
@@ -12,10 +11,11 @@ class App : MultiDexApplication() {
         super.onCreate()
 
         BuildConfigRuntime.initFlipper(this)
+        Timber.plant(Timber.DebugTree())
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        Log.i(TAG, "onConfigurationChanged $newConfig")
+        Timber.i("onConfigurationChanged $newConfig")
     }
 }

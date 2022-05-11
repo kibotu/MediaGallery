@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="media_gallery_enable_glide_progress_listener">true</bool>
+    <integer name="media_gallery_timeout_duration_in_seconds">60</integer>
+</resources>

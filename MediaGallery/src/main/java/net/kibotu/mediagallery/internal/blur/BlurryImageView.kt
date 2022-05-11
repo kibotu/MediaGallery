@@ -5,69 +5,74 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.util.TypedValue
 import androidx.appcompat.widget.AppCompatImageView
-import net.kibotu.mediagallery.internal.log
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.kibotu.mediagallery.internal.extensions.dp
 
-internal class BlurryImageView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    defStyleRes: Int = 0
-) : AppCompatImageView(context, attrs, defStyleAttr) {
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
+
+internal class BlurryImageView : AppCompatImageView {
+
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private val paint by lazy { Paint().apply { flags = Paint.FILTER_BITMAP_FLAG } }
 
     private var blurryBitmap: Bitmap? = null
 
-    fun blur(bitmap: Bitmap?) {
-        blurWith(bitmap) {
-            setImageBitmap(bitmap)
+    private var blurJob: Job? = null
+
+    override fun setImageBitmap(bm: Bitmap?) {
+        if (bm == null) {
+            super.setImageBitmap(null)
+            return
         }
+
+        blurJob?.cancel()
+
+        blurJob = findViewTreeLifecycleOwner()
+            ?.lifecycleScope
+            ?.launch {
+                val bitmap = blurWith(bm) ?: return@launch
+                super.setImageBitmap(bitmap)
+            }
     }
 
-    /**
-     * Converts dp to pixel.
-     */
-    private val Float.dp: Float
-        get() = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            this,
-            context!!.resources.displayMetrics
-        )
-
-    fun blurWith(bitmap: Bitmap?, radius: Int = 10, scaleFactor: Float = 8f, onBlurredBitmap: (Bitmap) -> Unit) {
-
-        if (bitmap == null)
-            return
+    private suspend fun blurWith(bitmap: Bitmap?, radius: Int = 10, scaleFactor: Float = 8f): Bitmap? = withContext(Dispatchers.Main) {
+        if (bitmap == null) return@withContext null
 
         var width = measuredWidth
         var height = measuredHeight
 
         if (width <= 0 || height <= 0) {
-            width = context?.resources?.configuration?.screenWidthDp?.toFloat()?.dp?.toInt() ?: 0
-            height = context?.resources?.configuration?.screenHeightDp?.toFloat()?.dp?.toInt() ?: 0
+            width = context?.resources?.configuration?.screenWidthDp?.dp ?: 0
+            height = context?.resources?.configuration?.screenHeightDp?.dp ?: 0
         }
 
-        if (width <= 0 || height <= 0) {
-            return
-        }
+        if (width <= 0 || height <= 0) return@withContext null
 
-        val startMs = System.currentTimeMillis()
-
-        if (blurryBitmap == null)
+        if (blurryBitmap == null) {
             blurryBitmap = Bitmap.createBitmap((width / scaleFactor).toInt(), (height / scaleFactor).toInt(), Bitmap.Config.RGB_565)
+        }
 
-        val canvas = Canvas(blurryBitmap!!)
+        val canvas = Canvas(requireNotNull(blurryBitmap))
         // todo move blur background to center, possible scale back
 //         canvas.translate(-left.toFloat() + -measuredWidth / 2f, -top.toFloat() / 2f)
         canvas.scale(0.5f, 0.5f)
         canvas.drawBitmap(bitmap, 0f, 0f, paint)
 
-        blurryBitmap = FastBlur.doBlur(blurryBitmap, radius, true)
+        blurryBitmap = FastBlur.doBlur(requireNotNull(blurryBitmap), radius, true)
 
-        onBlurredBitmap.invoke(blurryBitmap!!)
-
-        log( "view=[$measuredWidth:$measuredHeight]: bitmap=[${bitmap.width}:${bitmap.height}] blurryBitmap=[${blurryBitmap?.width}:${blurryBitmap?.height}] canvas=${canvas.width}x${canvas.height} in ${System.currentTimeMillis() - startMs} ms sx=${(width / scaleFactor).toInt()} sy=${(width / scaleFactor).toInt()}" )
+        blurryBitmap
     }
 }

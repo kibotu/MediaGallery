@@ -1,20 +1,23 @@
 package net.kibotu.mediagallery.data
 
 import android.net.Uri
+import androidx.core.net.toUri
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
-
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
 @Parcelize
 data class Video(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String,
     var uri: Uri,
     val type: Type = Type.FILE,
     val enable360: Boolean = false
-) : MediaData {
+) : Media {
 
-    constructor(id: String = UUID.randomUUID().toString(), uri: String, type: Type, enable360: Boolean = false) : this(id, Uri.parse(uri), type, enable360)
+    constructor(id: String = UUID.randomUUID().toString(), uri: String, type: Type, enable360: Boolean = false) : this(id, uri.toUri(), type, enable360)
 
     @IgnoredOnParcel
     @Transient
@@ -25,22 +28,17 @@ data class Video(
          * prepends file:///android_asset/
          */
         ASSETS,
-        /**
-         * prepends context.applicationContext.filesDir.absolutePath
-         */
-        EXTERNAL_STORAGE,
-        /**
-         * prepends Environment.getExternalStorageDirectory()
-         */
-        INTERNAL_STORAGE,
+
         /**
          * raw uri, assumes it's a local file
          */
         FILE,
+
         /**
          * hsl stream uri
          */
         HLS,
+
         /**
          * retrieves video url by youtube video id, video requires to be publicly available
          */

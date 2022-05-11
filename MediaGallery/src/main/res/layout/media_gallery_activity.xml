@@ -7,10 +7,23 @@
     android:background="@android:color/black"
     android:fitsSystemWindows="false">
 
-    <net.kibotu.mediagallery.internal.blur.Crossfader
-        android:id="@+id/blurryBackground"
+    <net.kibotu.mediagallery.internal.blur.BlurryImageView
+        android:id="@+id/leftImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <net.kibotu.mediagallery.internal.blur.BlurryImageView
+        android:id="@+id/rightImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,18 +42,20 @@
         android:id="@+id/quit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginTop="@dimen/media_gallery_space_16"
+        android:layout_marginEnd="@dimen/media_gallery_space_16"
+        android:adjustViewBounds="true"
+        android:foreground="?selectableItemBackgroundBorderless"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_round_exit" />
+        app:srcCompat="@drawable/media_gallery_ic_round_exit" />
 
     <com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
         android:id="@+id/indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="@dimen/media_gallery_space_32"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

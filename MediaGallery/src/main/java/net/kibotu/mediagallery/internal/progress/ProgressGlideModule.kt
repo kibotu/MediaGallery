@@ -10,7 +10,7 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.LibraryGlideModule
 import me.jessyan.progressmanager.ProgressManager
 import net.kibotu.mediagallery.BuildConfig
-import net.kibotu.mediagallery.internal.log
+import net.kibotu.mediagallery.internal.extensions.log
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -20,7 +20,9 @@ import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
-
+/**
+ * Created by [Jan Rabe](https://kibotu.net).
+ */
 @GlideModule
 class GlideConfiguration : LibraryGlideModule() {
 

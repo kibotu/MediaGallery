@@ -68,5 +68,5 @@ abstract class BaseTransformer : PageTransformer {
      * @param view
      * @param position
      */
-    protected fun onPostTransform(view: View, position: Float) {}
+    protected fun onPostTransform(view: View, position: Float) = Unit
 }

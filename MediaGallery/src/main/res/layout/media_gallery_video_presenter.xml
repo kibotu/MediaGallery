@@ -14,7 +14,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.exoplayer2.ui.PlayerView
+    <com.google.android.exoplayer2.ui.StyledPlayerView
         android:id="@+id/player_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -31,7 +31,7 @@
 
         <requestFocus />
 
-    </com.google.android.exoplayer2.ui.PlayerView>
+    </com.google.android.exoplayer2.ui.StyledPlayerView>
 
     <ImageView
         android:id="@+id/playPause"
