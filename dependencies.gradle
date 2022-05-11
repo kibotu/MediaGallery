@@ -8,7 +8,7 @@ ext {
     targetSdkVer = 32
 
     // @see https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib-jdk8
-    kotlin_version = '1.6.20'
+    kotlin_version = '1.6.21'
 
     isCi = rootProject.hasProperty("CI") || rootProject.hasProperty("ci") || System.getenv().containsKey("CI")
     isLocal = project.rootProject.file('local.properties').exists()
