@@ -64,7 +64,6 @@ android {
     }
 
 
-
     // region java compile options
 
     compileOptions {
@@ -127,28 +126,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation libs.timber
-
-    implementation libs.rx2java
-    implementation libs.rx2Android
-    implementation libs.rx2Kotlin
-    implementation libs.rxpermissions
-
     implementation project(":MediaGallery")
 
-    implementation libs.glide
-    implementation libs.glideOkHttp3
-    implementation libs.lifecycleCommonJava8
-    kapt libs.glideAnnotationsProcessor
-
-    implementation libs.soloader
-    implementation libs.flipper
-    implementation libs.flipperNetworkPlugin
-
-    implementation libs.multidex
-    implementation libs.appCompat
-    implementation libs.material
-    implementation libs.constraintlayout
-    implementation libs.androidKtxCore
+    libs.each {
+        implementation it.value
+    }
 }

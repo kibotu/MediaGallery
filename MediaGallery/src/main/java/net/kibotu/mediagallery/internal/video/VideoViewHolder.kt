@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.SparseArray
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.net.toUri
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
@@ -12,12 +13,13 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SeekParameters
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import net.kibotu.android.recyclerviewpresenter.RecyclerViewHolder
@@ -25,6 +27,7 @@ import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Video
 import net.kibotu.mediagallery.internal.extensions.log
 import net.kibotu.mediagallery.internal.extensions.parseAssetFile
+import net.kibotu.mediagallery.internal.extensions.textOrGone
 
 
 /**
@@ -37,6 +40,12 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
 
     private val playerView: StyledPlayerView
         get() = itemView.findViewById(R.id.player_view)
+
+    private val title: TextView
+        get() = itemView.findViewById(R.id.title)
+
+    private val author: TextView
+        get() = itemView.findViewById(R.id.author)
 
     private var player: ExoPlayer?
         set(value) {
@@ -77,29 +86,49 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         when (type) {
             Video.Type.ASSETS -> onVideo(uri.toString().parseAssetFile())
             Video.Type.HLS -> onHlsVideo(uri)
+            Video.Type.DASH -> onDashVideo(uri)
             Video.Type.YOUTUBE -> onYoutubeVideo(uri)
-            else -> onVideo(uri)
+            /* Video.Type.FILE */ else -> onVideo(uri)
         }
-    }
-
-    private fun onHlsVideo(uri: Uri) {
-        log("onHlsVideo $uri")
-        val dataSourceFactory: DataSource.Factory = DefaultHttpDataSource.Factory()
-        val mediaSource = HlsMediaSource.Factory(dataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(MediaItem.fromUri(uri ?: return))
-        player?.repeatMode = Player.REPEAT_MODE_ALL
-        player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
-        player?.setMediaSource(mediaSource)
-        player?.prepare()
     }
 
     private fun onVideo(uri: Uri) {
         log("onVideo $uri")
-        val defaultDataSourceFactory = DefaultDataSource.Factory(application)
-        val mediaSource = ProgressiveMediaSource.Factory(defaultDataSourceFactory).createMediaSource(MediaItem.fromUri(uri))
+        val dataSource = DefaultDataSource.Factory(application)
+        val mediaSource = ProgressiveMediaSource.Factory(dataSource).createMediaSource(MediaItem.fromUri(uri))
         player?.repeatMode = Player.REPEAT_MODE_ALL
         player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
         player?.setMediaSource(mediaSource)
         player?.prepare()
+    }
+
+    private fun onYoutubeVideo(uri: Uri) {
+        log("onYoutubeVideo $uri")
+        Extractor(application) { ytFiles, vMeta ->
+
+            val map = ytFiles.toMap()
+
+            val channel = vMeta?.channelId
+            val videoId = vMeta?.videoId
+            val viewCount = vMeta?.viewCount
+
+            author.textOrGone = vMeta?.author
+            title.textOrGone = vMeta?.title
+
+            map.forEach {
+                log("${it.key} -> ${it.value}")
+            }
+
+            val video = map
+                .filter { it.value.format.ext == "mp4" }
+                .maxByOrNull { it.value.format.height }
+                ?.value ?: return@Extractor
+
+            if (video.format.isHlsContent) onHlsVideo(video.url.toUri())
+            // if (video.format.isDashContainer) onDashVideo(video.url.toUri()) todo, does not work atm
+            else onVideo(video.url.toUri())
+
+        }.extract(uri.toString())
     }
 
     private class Extractor(context: Context, val onComplete: (ytFiles: SparseArray<YtFile>, vMeta: VideoMeta?) -> Unit) : YouTubeExtractor(context) {
@@ -109,13 +138,24 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         }
     }
 
-    private fun onYoutubeVideo(uri: Uri) {
-        log("onYoutubeVideo $uri")
-        Extractor(application) { ytFiles, vMeta ->
-            val itag = 22
-            val downloadUrl = ytFiles[itag].url
-            onHlsVideo(downloadUrl.toUri())
-        }.extract(uri.toString())
+    private fun onHlsVideo(uri: Uri) {
+        log("onHlsVideo $uri")
+        val dataSource = DefaultHttpDataSource.Factory()
+        val mediaSource = HlsMediaSource.Factory(dataSource).setAllowChunklessPreparation(true).createMediaSource(MediaItem.fromUri(uri))
+        player?.repeatMode = Player.REPEAT_MODE_ALL
+        player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
+    }
+
+    private fun onDashVideo(uri: Uri) {
+        log("onDashVideo $uri")
+        val dataSource = DefaultHttpDataSource.Factory()
+        val mediaSource: MediaSource = DashMediaSource.Factory(dataSource).createMediaSource(MediaItem.fromUri(uri))
+        player?.repeatMode = Player.REPEAT_MODE_ALL
+        player?.setSeekParameters(SeekParameters.CLOSEST_SYNC)
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
     }
 
     var type: Video.Type = Video.Type.FILE
@@ -156,5 +196,11 @@ internal class VideoViewHolder(parent: ViewGroup, layout: Int) : RecyclerViewHol
         player?.release()
         player = null
         progress = null
+    }
+}
+
+private inline fun <reified E> SparseArray<E>.toMap(): Map<Int, E> = buildMap {
+    for (i in 0 until size()) {
+        put(keyAt(i), valueAt(i))
     }
 }

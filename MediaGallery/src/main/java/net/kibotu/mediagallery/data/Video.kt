@@ -40,6 +40,11 @@ data class Video(
         HLS,
 
         /**
+         * dash stream uri
+         */
+        DASH,
+
+        /**
          * retrieves video url by youtube video id, video requires to be publicly available
          */
         YOUTUBE

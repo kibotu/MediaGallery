@@ -103,6 +103,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation libs.youtubeExtractor
+    implementation libs.exoplayerDash
     implementation libs.exoplayerHls
     implementation libs.exoplayerUi
     implementation libs.exoplayerCore
@@ -135,13 +136,6 @@ dependencies {
 
 def escape(Object value) {
     return "\"" + value + "\""
-}
-
-configurations.all {
-    resolutionStrategy.cacheDynamicVersionsFor 10, 'minutes'
-
-    resolutionStrategy.force libs.okhttp4
-    resolutionStrategy.force libs.okhttp3LoggingInterceptor
 }
 
 afterEvaluate {

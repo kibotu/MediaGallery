@@ -12,6 +12,8 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager
+import android.widget.TextView
+import androidx.core.view.isGone
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
@@ -100,3 +102,10 @@ val Float.dp: Float
  * Converts dp to pixel.
  */
 val Int.dp: Int get() = toFloat().dp.toInt()
+
+var TextView.textOrGone: CharSequence?
+    get() = text.toString()
+    set(value) {
+        isGone = value.isNullOrEmpty()
+        text = value ?: ""
+    }

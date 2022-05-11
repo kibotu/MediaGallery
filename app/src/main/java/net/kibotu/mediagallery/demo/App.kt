@@ -1,16 +1,14 @@
 package net.kibotu.mediagallery.demo
 
+import android.app.Application
 import android.content.res.Configuration
-import androidx.multidex.MultiDexApplication
-import net.kibotu.mediagallery.demo.debug.BuildConfigRuntime
 import timber.log.Timber
 
-class App : MultiDexApplication() {
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        BuildConfigRuntime.initFlipper(this)
         Timber.plant(Timber.DebugTree())
     }
 

@@ -8,6 +8,7 @@ import net.kibotu.android.recyclerviewpresenter.PresenterViewModel
 import net.kibotu.mediagallery.R
 import net.kibotu.mediagallery.data.Video
 import net.kibotu.mediagallery.databinding.MediaGalleryVideoPresenterBinding
+import net.kibotu.mediagallery.internal.extensions.textOrGone
 
 /**
  * Created by [Jan Rabe](https://kibotu.net).
@@ -25,7 +26,6 @@ class VideoListBinder(
             playerView.useController = showVideoControls
             playerView.controllerShowTimeoutMs = showVideoControlsTimeOut
 
-            @Suppress("CAST_NEVER_SUCCEEDS")
             with(viewHolder as VideoViewHolder) {
                 autoPlay = this@VideoListBinder.autoPlay
                 uri = item.model.uri
@@ -38,6 +38,9 @@ class VideoListBinder(
                 playerView.setOnClickListener {
                     isPlaying = !isPlaying
                 }
+
+                author.textOrGone = null
+                title.textOrGone = null
 
                 // todo prettier play/pause button
                 playPauseButton(this)
