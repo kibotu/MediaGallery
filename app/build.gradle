@@ -14,6 +14,7 @@ android {
 
     defaultConfig {
         applicationId "net.kibotu.mediagallery.demo"
+        namespace "net.kibotu.mediagallery.demo"
         minSdkVersion minSdkVer
         multiDexEnabled true
         targetSdkVersion targetSdkVer
@@ -128,7 +129,24 @@ android {
 dependencies {
     implementation project(":MediaGallery")
 
-    libs.each {
-        implementation it.value
-    }
+    implementation libs.appCompat
+    implementation libs.material
+    implementation libs.constraintlayout
+    implementation libs.androidKtxCore
+    implementation libs.timber
+    implementation libs.rxpermissions
+    implementation libs.rx2Kotlin
+    implementation libs.glide
+    kapt libs.glideAnnotationsProcessor
+}
+
+configurations.all {
+
+    resolutionStrategy.force "androidx.annotation:annotation:1.5.0"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-livedata:2.5.1"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-process:2.4.1"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    resolutionStrategy.force "androidx.recyclerview:recyclerview:1.2.1"
+    resolutionStrategy.force "org.jetbrains:annotations:23.0.0"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
 }

@@ -1,10 +1,8 @@
 package net.kibotu.mediagallery.demo
 
-import android.Manifest
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.tbruyelle.rxpermissions2.RxPermissions
 import io.reactivex.disposables.CompositeDisposable
 import net.kibotu.mediagallery.MediaGalleryActivity
 import net.kibotu.mediagallery.data.Image
@@ -22,21 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        subscription.add(
-            RxPermissions(this)
-                .requestEachCombined(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .subscribe({
-                    if (it.granted)
-                        binding.init()
-                }, {
-                    Timber.v("permission $it")
-                })
-        )
+        binding.init()
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun ActivityMainBinding.init() {
-//        v( "window=${screenWidthPixels}x$screenHeightPixels " )
 
         // [x] list of imageMedia objects
         // [] list of video media objects
@@ -78,10 +65,18 @@ class MainActivity : AppCompatActivity() {
         ).map { Uri.parse(it) }
 
         val youtubeVideo = Video(uri = youtubeVideoId, type = Video.Type.YOUTUBE)
-        val youtube360Video = Video(uri = youtube360VideoId, enable360 = true, type = Video.Type.YOUTUBE)
-        val assetVideo = Video(uri = "walkaround_with_additional_iframes.mp4", type = Video.Type.ASSETS)
-        val fileVideo = Video(uri = "walkaround_with_additional_iframes.mp4".parseAssetFile().toString(), type = Video.Type.FILE)
-        val hlsVideo = Video(uri = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8", type = Video.Type.HLS)
+        val youtube360Video =
+            Video(uri = youtube360VideoId, enable360 = true, type = Video.Type.YOUTUBE)
+        val assetVideo =
+            Video(uri = "walkaround_with_additional_iframes.mp4", type = Video.Type.ASSETS)
+        val fileVideo = Video(
+            uri = "walkaround_with_additional_iframes.mp4".parseAssetFile().toString(),
+            type = Video.Type.FILE
+        )
+        val hlsVideo = Video(
+            uri = "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8",
+            type = Video.Type.HLS
+        )
         val hls2Video = Video(
             uri = "https://multiplatform-f.akamaihd.net/i/multi/april11/sintel/sintel-hd_,512x288_450_b,640x360_700_b,768x432_1000_b,1024x576_1400_m,.mp4.csmil/master.m3u8",
             type = Video.Type.HLS
@@ -92,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         imageGallery.setOnClickListener {
+            Timber.v("start image gallery")
             val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
@@ -106,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         videoGallery.setOnClickListener {
+            Timber.v("start video")
             MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
                 isBlurrable = true
@@ -124,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         mixedGallery.setOnClickListener {
+            Timber.v("start mixed gallery")
             val uris = (0 until 100).map { Uri.parse(createRandomImageUrl()) }
             MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
@@ -144,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         youtubeVideos.setOnClickListener {
+            Timber.v("start youtube gallery")
             MediaGalleryActivity.Builder.with(this@MainActivity) {
                 autoPlay = true
                 isBlurrable = true

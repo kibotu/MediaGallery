@@ -75,7 +75,7 @@ class MediaGalleryActivity : AppCompatActivity() {
         )
 
         if (params.showPageIndicator && params.media.size > 1)
-            indicator.attachToViewPager(pager)
+            indicator.attachToViewPager2(pager)
 
         pager.setPageTransformer(ZoomOutSlideTransformer())
 

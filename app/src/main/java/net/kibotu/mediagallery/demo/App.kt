@@ -10,6 +10,7 @@ class App : Application() {
         super.onCreate()
 
         Timber.plant(Timber.DebugTree())
+        Timber.v("onCreate")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

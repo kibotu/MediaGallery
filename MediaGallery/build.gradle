@@ -11,6 +11,7 @@ android {
     buildToolsVersion buildToolsVer
 
     defaultConfig {
+        namespace "net.kibotu.mediagallery"
         minSdkVersion minSdkVer
         targetSdkVersion targetSdkVer
         versionCode isCi ? commitCount() : VERSION_CODE
@@ -57,7 +58,6 @@ android {
                 // disable linting for opt-in annotations
                 "-Xopt-in=kotlin.RequiresOptIn",
         ]
-        useIR = true
     }
 
     // endregion
@@ -132,6 +132,22 @@ dependencies {
 
     implementation libs.okhttp4
     implementation libs.okhttp3LoggingInterceptor
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+}
+
+configurations.all {
+    (libs).each {
+        resolutionStrategy.force it.value
+    }
+
+    resolutionStrategy.force "androidx.annotation:annotation:1.5.0"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-livedata:2.5.1"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-process:2.4.1"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    resolutionStrategy.force "androidx.recyclerview:recyclerview:1.2.1"
+    resolutionStrategy.force "org.jetbrains:annotations:23.0.0"
+    resolutionStrategy.force "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
 }
 
 def escape(Object value) {

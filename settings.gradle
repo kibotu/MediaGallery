@@ -1,1 +1,2 @@
-include ':app', ':MediaGallery'
+include ':app'
+include ':MediaGallery'
